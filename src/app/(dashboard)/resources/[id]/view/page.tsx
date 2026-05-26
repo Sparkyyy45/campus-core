@@ -1,7 +1,7 @@
 // src/app/(dashboard)/resources/[id]/view/page.tsx
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { PDFViewer } from "@/components/resources/pdf-viewer";
+import { LazyPDFViewer } from "@/components/resources/lazy-pdf-viewer";
 import { ChevronLeft, Download } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -73,7 +73,7 @@ export default async function ResourceViewPage({
 
       {/* PDF Viewer Area */}
       <div className="flex-1 bg-muted/30 overflow-hidden relative">
-        <PDFViewer resourceId={id} />
+        <LazyPDFViewer resourceId={id} />
       </div>
     </div>
   );

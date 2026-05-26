@@ -36,19 +36,19 @@ export async function GET(
     const expiresAt = Math.floor(Date.now() / 1000) + 3600;
     const signedUrl = getSignedUrl(resource.cloudinary_public_id, expiresAt, downloadRequested);
 
-    // 5. Log download/view
-    const { error: logError } = await supabase
-      .from("resource_downloads")
-      .insert({
-        user_id: user.id,
-        resource_id: id,
-      } as any);
-
-    if (logError) {
-      console.warn("Failed to log download:", logError);
-    }
-
     if (downloadRequested) {
+      // Only log actual downloads, not inline preview views
+      const { error: logError } = await supabase
+        .from("resource_downloads")
+        .insert({
+          user_id: user.id,
+          resource_id: id,
+        } as any);
+
+      if (logError) {
+        console.warn("Failed to log download:", logError);
+      }
+
       return NextResponse.redirect(signedUrl);
     }
 

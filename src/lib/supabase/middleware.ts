@@ -44,7 +44,7 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // --- Route protection logic ---
+  // --- Route classification ---
   const isAuthPage =
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
@@ -56,6 +56,12 @@ export async function updateSession(request: NextRequest) {
   const isOnboardingRoute = pathname.startsWith("/onboarding");
   const isProtectedRoute = isDashboardRoute || isAdminRoute || isOnboardingRoute;
 
+  // Determine if this route actually needs a profile/role DB lookup.
+  // Standard student pages (/dashboard, /resources, /notes, /pyqs, etc.)
+  // do NOT need the role — their Server Components fetch profiles independently.
+  // Only admin gating, onboarding redirects, and auth-page redirects need it.
+  const needsProfileQuery = isAdminRoute || isOnboardingRoute || isAuthPage;
+
   // 1. Unauthenticated user hitting protected route → login
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
@@ -64,9 +70,13 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // 2. Authenticated user handling
+  // 2. Authenticated user on a route that doesn't need role lookup → pass through immediately
+  if (user && !needsProfileQuery) {
+    return supabaseResponse;
+  }
+
+  // 3. Authenticated user on a route that DOES need role lookup
   if (user) {
-    // Fetch profile to check role and existence
     const { data: profileData } = await supabase
       .from("profiles")
       .select("role")

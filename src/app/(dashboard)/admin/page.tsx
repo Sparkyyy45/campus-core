@@ -47,25 +47,21 @@ export default async function AdminPage() {
     db.from("resource_downloads").select("*", { count: "exact", head: true }),
   ]);
 
-  // ── 7-day active users (distinct users who downloaded in past 7 days) ──
-  // eslint-disable-next-line react-hooks/purity
+  // ── Analytics queries (run concurrently) ──
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const { data: recentDownloads } = await db
-    .from("resource_downloads")
-    .select("user_id")
-    .gte("downloaded_at", sevenDaysAgo) as { data: { user_id: string }[] | null };
+
+  const [recentDownloadsResult, downloads7dResult, sizeDataResult, allDownloadsResult] = await Promise.all([
+    db.from("resource_downloads").select("user_id").gte("downloaded_at", sevenDaysAgo) as any,
+    db.from("resource_downloads").select("*", { count: "exact", head: true }).gte("downloaded_at", sevenDaysAgo),
+    db.from("resources").select("file_size_bytes") as any,
+    db.from("resource_downloads").select("resource_id") as any,
+  ]);
+
+  const recentDownloads = recentDownloadsResult.data as { user_id: string }[] | null;
   const activeUsers7d = new Set((recentDownloads ?? []).map((d: { user_id: string }) => d.user_id)).size;
+  const downloads7d = downloads7dResult.count;
 
-  // ── 7-day download count ──
-  const { count: downloads7d } = await db
-    .from("resource_downloads")
-    .select("*", { count: "exact", head: true })
-    .gte("downloaded_at", sevenDaysAgo);
-
-  // ── Estimated storage (sum file_size_bytes) ──
-  const { data: sizeData } = await db
-    .from("resources")
-    .select("file_size_bytes") as { data: { file_size_bytes: number | null }[] | null };
+  const sizeData = sizeDataResult.data as { file_size_bytes: number | null }[] | null;
   const totalBytes = (sizeData ?? []).reduce(
     (sum: number, r: { file_size_bytes: number | null }) => sum + (r.file_size_bytes ?? 0),
     0
@@ -76,11 +72,7 @@ export default async function AdminPage() {
     : `${storageMB} MB`;
 
   // ── Top downloaded resources (top 5) ──
-  const { data: allDownloads } = await db
-    .from("resource_downloads")
-    .select("resource_id") as { data: { resource_id: string }[] | null };
-
-  // Count downloads per resource
+  const allDownloads = allDownloadsResult.data as { resource_id: string }[] | null;
   const downloadCounts: Record<string, number> = {};
   (allDownloads ?? []).forEach((d: { resource_id: string }) => {
     downloadCounts[d.resource_id] = (downloadCounts[d.resource_id] ?? 0) + 1;
