@@ -17,7 +17,7 @@ interface TopbarProps {
 
 export function Topbar({ userName, role, branch, unreadAnnouncements = 0 }: TopbarProps) {
   return (
-    <header className="h-16 border-b border-[#EAEAEA] bg-white px-8 flex items-center justify-between sticky top-0 z-40 font-sans selection:bg-[#EAEAEA]">
+    <header className="h-16 border-b border-[#EAEAEA] bg-white px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40 font-sans selection:bg-[#EAEAEA]">
       {/* Mobile Menu Toggle */}
       <Sheet>
         <SheetTrigger render={<Button variant="ghost" size="icon" className="lg:hidden mr-3 shrink-0 rounded-[4px]" />}>
