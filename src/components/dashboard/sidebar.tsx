@@ -152,8 +152,8 @@ export function Sidebar({
           type="button"
           onClick={() => setIsCollapsed(!isCollapsed)}
           className={cn(
-            "flex items-center gap-3 w-full rounded-[4px] px-3 py-2.5 text-xs font-normal tracking-wider text-[#787774] hover:text-[#37352F] hover:bg-[#F7F7F7]/50 transition-colors duration-150 cursor-pointer border border-transparent",
-            isCollapsed && "justify-center px-0"
+            "hidden lg:flex items-center gap-3 w-full rounded-[4px] px-3 py-2.5 text-xs font-normal tracking-wider text-[#787774] hover:text-[#37352F] hover:bg-[#F7F7F7]/50 transition-colors duration-150 cursor-pointer border border-transparent",
+            isCollapsed && "lg:justify-center lg:px-0"
           )}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >

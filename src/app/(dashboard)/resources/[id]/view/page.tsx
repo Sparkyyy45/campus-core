@@ -62,9 +62,10 @@ export default async function ResourceViewPage({
             target="_blank" 
             rel="noopener noreferrer"
           >
-            <Button variant="outline" size="sm" className="gap-2 h-9 hidden sm:flex">
-              <Download className="h-4 w-4" />
-              Download
+            <Button variant="outline" size="sm" className="gap-1.5 h-9 flex px-2.5 sm:px-3 text-xs font-bold transition-all">
+              <Download className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Download</span>
+              <span className="inline sm:hidden">Get</span>
             </Button>
           </a>
         </div>

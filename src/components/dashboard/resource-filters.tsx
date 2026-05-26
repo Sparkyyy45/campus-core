@@ -55,19 +55,19 @@ export function ResourceFilters({
         />
       </div>
       
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
         <select 
-          className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none cursor-pointer"
+          className="flex-1 sm:flex-initial bg-background border border-border rounded-lg px-2.5 sm:px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none cursor-pointer"
           value={currentSemester}
           onChange={(e) => updateFilters("semester", e.target.value)}
         >
           {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
-            <option key={sem} value={sem}>Semester {sem}</option>
+            <option key={sem} value={sem}>Sem {sem}</option>
           ))}
         </select>
 
         <select 
-          className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none min-w-[150px] cursor-pointer"
+          className="flex-1 sm:flex-initial bg-background border border-border rounded-lg px-2.5 sm:px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none min-w-[120px] sm:min-w-[150px] max-w-[200px] sm:max-w-none cursor-pointer"
           value={currentSubject || ""}
           onChange={(e) => updateFilters("subject", e.target.value)}
         >
@@ -83,7 +83,7 @@ export function ResourceFilters({
         </select>
 
         <select 
-          className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none cursor-pointer"
+          className="flex-1 sm:flex-initial bg-background border border-border rounded-lg px-2.5 sm:px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none cursor-pointer"
           value={currentType || ""}
           onChange={(e) => updateFilters("type", e.target.value)}
         >
