@@ -298,3 +298,9 @@ create policy "Users can view own downloads"
 create policy "Users can insert own downloads"
   on public.resource_downloads for insert
   with check (user_id = auth.uid());
+
+-- ────────────────────────────────────────────────────────────
+-- PERFORMANCE INDEXES
+-- ────────────────────────────────────────────────────────────
+create index if not exists idx_resources_active_query on public.resources (branch_code, semester, status, created_at desc);
+

@@ -13,21 +13,20 @@ export default async function AnnouncementsPage() {
 
   const db = supabase as any;
 
-  // Fetch all announcements, newest first
-  const { data: announcements } = (await db
-    .from("announcements")
-    .select("*")
-    .order("created_at", { ascending: false })) as {
-    data: Announcement[] | null;
-  };
+  // Fetch all announcements and the student's reads concurrently
+  const [announcementsResult, readsResult] = await Promise.all([
+    db
+      .from("announcements")
+      .select("*")
+      .order("created_at", { ascending: false }) as any,
+    db
+      .from("announcement_reads")
+      .select("announcement_id")
+      .eq("user_id", user.id) as any
+  ]);
 
-  // Fetch this student's reads
-  const { data: reads } = (await db
-    .from("announcement_reads")
-    .select("announcement_id")
-    .eq("user_id", user.id)) as {
-    data: { announcement_id: string }[] | null;
-  };
+  const announcements = announcementsResult.data;
+  const reads = readsResult.data;
 
   const readIds = (reads ?? []).map(
     (r: { announcement_id: string }) => r.announcement_id

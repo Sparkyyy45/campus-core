@@ -233,7 +233,7 @@ export default async function ResourcesPage({
                   </span>
 
                   <div className="flex items-center gap-1.5">
-                    <Link href={`/resources/${res.id}/view`}>
+                    <Link href={`/resources/${res.id}/view`} prefetch={false}>
                       <Button 
                         variant="ghost" 
                         size="sm" 

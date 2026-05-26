@@ -27,11 +27,20 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const { data: profile, error } = (await supabase
-    .from("profiles")
-    .select("full_name, role, branch_code")
-    .eq("id", user.id)
-    .maybeSingle()) as { data: { full_name: string | null; role: string; branch_code: string | null } | null; error: any };
+  const db = supabase as any;
+
+  // Query profile and announcement counts concurrently to avoid sequential waterfall latency
+  const [profileResult, totalAnnResult, readAnnResult] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("full_name, role, branch_code")
+      .eq("id", user.id)
+      .maybeSingle() as any,
+    db.from("announcements").select("*", { count: "exact", head: true }),
+    db.from("announcement_reads").select("*", { count: "exact", head: true }).eq("user_id", user.id)
+  ]);
+
+  const { data: profile, error } = profileResult;
 
   if (error || !profile) {
     // This shouldn't happen if trigger works, but safety first
@@ -44,15 +53,7 @@ export default async function DashboardLayout({
   // Compute unread announcement count for students
   let unreadAnnouncementCount = 0;
   if (profile.role === "STUDENT") {
-    const db = supabase as any;
-    const [{ count: totalAnn }, { count: readAnn }] = await Promise.all([
-      db.from("announcements").select("*", { count: "exact", head: true }),
-      db
-        .from("announcement_reads")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id),
-    ]);
-    unreadAnnouncementCount = Math.max(0, (totalAnn ?? 0) - (readAnn ?? 0));
+    unreadAnnouncementCount = Math.max(0, (totalAnnResult.count ?? 0) - (readAnnResult.count ?? 0));
   }
 
   return (

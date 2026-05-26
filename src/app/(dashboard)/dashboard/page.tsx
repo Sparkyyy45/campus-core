@@ -23,46 +23,51 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, branch_code, semester, role")
-    .eq("id", user.id)
-    .single() as { data: { full_name: string; branch_code: string; semester: number; role: string } | null; error: unknown };
-
-  const firstName = profile?.full_name?.split(" ")[0] ?? "Student";
-
   const db = supabase as any;
 
-  // Fetch pinned announcements from DB
-  const { data: pinnedAnnouncements } = await db
-    .from("announcements")
-    .select("id, title, content")
-    .eq("is_pinned", true)
-    .order("created_at", { ascending: false })
-    .limit(3) as { data: { id: string; title: string; content: string }[] | null };
-
-  // Fetch unread count
-  const [{ count: totalAnn }, { count: readAnn }] = await Promise.all([
+  // STAGE 1: Fetch user profile, pinned announcements, total announcements count, and user's read announcements concurrently
+  const [profileResult, pinnedResult, totalAnnResult, readAnnResult] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("full_name, branch_code, semester, role")
+      .eq("id", user.id)
+      .single() as any,
+    db
+      .from("announcements")
+      .select("id, title, content")
+      .eq("is_pinned", true)
+      .order("created_at", { ascending: false })
+      .limit(3) as any,
     db.from("announcements").select("*", { count: "exact", head: true }),
     db.from("announcement_reads").select("*", { count: "exact", head: true }).eq("user_id", user.id),
   ]);
+
+  const profile = profileResult.data;
+  const pinnedAnnouncements = pinnedResult.data;
+  const totalAnn = totalAnnResult.count;
+  const readAnn = readAnnResult.count;
+
+  const firstName = profile?.full_name?.split(" ")[0] ?? "Student";
+
   const unreadCount = Math.max(0, (totalAnn ?? 0) - (readAnn ?? 0));
 
-  // Fetch roadmap progress for student's branch/semester
+  // STAGE 2: Fetch roadmap progress concurrently if profile exists
   let roadmapTotal = 0;
   let roadmapDone = 0;
   if (profile) {
-    const { count: rmTotal } = await db
-      .from("roadmaps")
-      .select("*", { count: "exact", head: true })
-      .eq("branch_code", profile.branch_code)
-      .eq("semester", profile.semester);
-    const { count: rmDone } = await db
-      .from("roadmap_completions")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id);
-    roadmapTotal = rmTotal ?? 0;
-    roadmapDone = Math.min(rmDone ?? 0, roadmapTotal);
+    const [rmTotalResult, rmDoneResult] = await Promise.all([
+      db
+        .from("roadmaps")
+        .select("*", { count: "exact", head: true })
+        .eq("branch_code", profile.branch_code)
+        .eq("semester", profile.semester),
+      db
+        .from("roadmap_completions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id),
+    ]);
+    roadmapTotal = rmTotalResult.count ?? 0;
+    roadmapDone = Math.min(rmDoneResult.count ?? 0, roadmapTotal);
   }
 
   const roadmapPct = roadmapTotal > 0 ? Math.round((roadmapDone / roadmapTotal) * 100) : 0;
