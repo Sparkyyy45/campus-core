@@ -8,6 +8,14 @@ interface PDFViewerProps {
   resourceId: string;
 }
 
+interface CachedUrl {
+  url: string;
+  expiresAt: number; // Unix timestamp in ms
+}
+
+const urlCache = new Map<string, CachedUrl>();
+const CACHE_DURATION = 45 * 60 * 1000; // 45 minutes in ms
+
 export function PDFViewer({ resourceId }: PDFViewerProps) {
   const [url, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -15,10 +23,27 @@ export function PDFViewer({ resourceId }: PDFViewerProps) {
 
   useEffect(() => {
     async function fetchUrl() {
+      // 1. Check local session cache
+      const cached = urlCache.get(resourceId);
+      const now = Date.now();
+      if (cached && cached.expiresAt > now) {
+        setUrl(cached.url);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Cache miss, fetch fresh signed URL from API
       try {
         const response = await fetch(`/api/resources/${resourceId}/signed-url`);
         if (!response.ok) throw new Error("Failed to get access URL");
         const data = await response.json();
+        
+        // Store in cache with 45 minutes expiration
+        urlCache.set(resourceId, {
+          url: data.url,
+          expiresAt: Date.now() + CACHE_DURATION,
+        });
+
         setUrl(data.url);
       } catch (err) {
         console.error(err);

@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export type SubjectActionResult = { error?: string; success?: string };
 
@@ -36,6 +36,7 @@ export async function createSubjectAction(
     return { error: error.message };
   }
 
+  revalidateTag("subjects", "max");
   revalidatePath("/admin/subjects");
   return { success: "Subject created." };
 }
@@ -55,6 +56,7 @@ export async function deleteSubjectAction(id: string): Promise<SubjectActionResu
   const { error } = await (supabase as any).from("subjects").delete().eq("id", id);
   if (error) return { error: error.message };
 
+  revalidateTag("subjects", "max");
   revalidatePath("/admin/subjects");
   return { success: "Subject deleted." };
 }

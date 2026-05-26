@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ResourceFilters } from "@/components/dashboard/resource-filters";
+import { getCachedSubjects, getCachedResourceTypes } from "@/lib/db-cache";
 
 interface Resource {
   id: string;
@@ -43,11 +44,13 @@ export default async function ResourcesPage({
 
   const db = supabase as any;
 
-  const { data: profile } = await db
-    .from("profiles")
-    .select("branch_code, semester")
-    .eq("id", user.id)
-    .single();
+  // STAGE 1: Fetch user profile and cached resource types concurrently
+  const [profileResult, resourceTypesRaw] = await Promise.all([
+    db.from("profiles").select("branch_code, semester").eq("id", user.id).single(),
+    getCachedResourceTypes()
+  ]);
+
+  const profile = profileResult.data;
 
   const rawSelectedType = sp.type as string | undefined;
   // Normalize "pyqs" to "pyq" to ensure seamless routing from dashboard cards
@@ -58,18 +61,6 @@ export default async function ResourcesPage({
     ? parseInt(sp.semester as string) 
     : profile?.semester || 1;
 
-  // Fetch subjects for this branch and semester
-  const { data: subjects } = await db
-    .from("subjects")
-    .select("id, name")
-    .eq("branch_code", profile?.branch_code || "")
-    .eq("semester", selectedSemester);
-
-  // Fetch resource types from DB safely without querying missing slug column
-  const { data: resourceTypesRaw } = await db
-    .from("resource_types")
-    .select("id, name, is_pyq");
-
   // Derive stable slug for filters
   const resourceTypes = ((resourceTypesRaw || []) as { id: string; name: string; is_pyq: boolean }[]).map(t => ({
     id: t.id,
@@ -79,7 +70,7 @@ export default async function ResourcesPage({
   }));
 
   // Build query for resources
-  let query = db
+  let dbQuery = db
     .from("resources")
     .select(`
       id, 
@@ -97,19 +88,25 @@ export default async function ResourcesPage({
   if (selectedType) {
     const typeObj = resourceTypes.find(t => t.slug === selectedType);
     if (typeObj) {
-      query = query.eq("resource_type_id", typeObj.id);
+      dbQuery = dbQuery.eq("resource_type_id", typeObj.id);
     }
   }
 
   if (selectedSubject) {
-    query = query.eq("subject_id", selectedSubject);
+    dbQuery = dbQuery.eq("subject_id", selectedSubject);
   }
 
   if (searchTerm) {
-    query = query.ilike("title", `%${searchTerm}%`);
+    dbQuery = dbQuery.ilike("title", `%${searchTerm}%`);
   }
 
-  const { data: resourcesRaw } = await query.order("created_at", { ascending: false });
+  // STAGE 2: Fetch cached subjects and resources concurrently
+  const [subjects, resourcesResult] = await Promise.all([
+    getCachedSubjects(profile?.branch_code || "", selectedSemester),
+    dbQuery.order("created_at", { ascending: false })
+  ]);
+
+  const resourcesRaw = resourcesResult.data;
   const resources = (resourcesRaw || []) as unknown as Resource[];
 
   // Helper to determine custom tag visual appearance
