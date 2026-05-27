@@ -17,6 +17,8 @@ import Link from "next/link";
 export default async function DashboardPage() {
   const supabase = await createClient();
 
+  // Auth is already validated by the dashboard layout — no need to call getUser() again.
+  // We only need the user ID for personalized queries.
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -25,7 +27,7 @@ export default async function DashboardPage() {
 
   const db = supabase as any;
 
-  // STAGE 1: Fetch user profile, pinned announcements, total announcements count, and user's read announcements concurrently
+  // STAGE 1: Fetch all dashboard data concurrently in a single batch
   const [profileResult, pinnedResult, totalAnnResult, readAnnResult] = await Promise.all([
     supabase
       .from("profiles")
@@ -51,7 +53,7 @@ export default async function DashboardPage() {
 
   const unreadCount = Math.max(0, (totalAnn ?? 0) - (readAnn ?? 0));
 
-  // STAGE 2: Fetch roadmap progress concurrently if profile exists
+  // STAGE 2: Fetch roadmap progress concurrently
   let roadmapTotal = 0;
   let roadmapDone = 0;
   if (profile) {

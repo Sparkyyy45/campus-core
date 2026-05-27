@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ResourceFilters } from "@/components/dashboard/resource-filters";
-import { getCachedSubjects, getCachedResourceTypes } from "@/lib/db-cache";
+import { getCachedSubjects, getCachedResourceTypes, getCachedResources } from "@/lib/db-cache";
 
 interface Resource {
   id: string;
@@ -24,6 +24,8 @@ interface Resource {
   description: string | null;
   cloudinary_url: string;
   file_size_bytes: number | null;
+  resource_type_id?: string;
+  subject_id?: string;
   subjects: { name: string; code: string } | null;
   resource_types: { name: string; is_pyq: boolean } | null;
 }
@@ -44,7 +46,7 @@ export default async function ResourcesPage({
 
   const db = supabase as any;
 
-  // STAGE 1: Fetch user profile and cached resource types concurrently
+  // STAGE 1: Fetch profile and resource types concurrently
   const [profileResult, resourceTypesRaw] = await Promise.all([
     db.from("profiles").select("branch_code, semester").eq("id", user.id).single(),
     getCachedResourceTypes()
@@ -53,7 +55,6 @@ export default async function ResourcesPage({
   const profile = profileResult.data;
 
   const rawSelectedType = sp.type as string | undefined;
-  // Normalize "pyqs" to "pyq" to ensure seamless routing from dashboard cards
   const selectedType = rawSelectedType === "pyqs" ? "pyq" : rawSelectedType;
   const selectedSubject = sp.subject as string | undefined;
   const searchTerm = sp.q as string | undefined;
@@ -61,7 +62,6 @@ export default async function ResourcesPage({
     ? parseInt(sp.semester as string) 
     : profile?.semester || 1;
 
-  // Derive stable slug for filters
   const resourceTypes = ((resourceTypesRaw || []) as { id: string; name: string; is_pyq: boolean }[]).map(t => ({
     id: t.id,
     name: t.name,
@@ -69,45 +69,32 @@ export default async function ResourcesPage({
     is_pyq: t.is_pyq
   }));
 
-  // Build query for resources
-  let dbQuery = db
-    .from("resources")
-    .select(`
-      id, 
-      title, 
-      description, 
-      cloudinary_url, 
-      file_size_bytes,
-      subjects (name),
-      resource_types (name, is_pyq)
-    `)
-    .eq("branch_code", profile?.branch_code || "")
-    .eq("semester", selectedSemester)
-    .eq("status", "PUBLISHED");
+  // STAGE 2: Fetch cached resources + subjects concurrently
+  // Resources are cached for 5 min per branch+semester combo — during exam peaks,
+  // 300 students in the same cohort all serve from cache instead of hitting Supabase.
+  const [allResources, subjects] = await Promise.all([
+    getCachedResources(profile?.branch_code || "", selectedSemester),
+    getCachedSubjects(profile?.branch_code || "", selectedSemester),
+  ]);
+
+  // Apply client-side filters on the cached result set
+  let resources = (allResources || []) as unknown as Resource[];
 
   if (selectedType) {
     const typeObj = resourceTypes.find(t => t.slug === selectedType);
     if (typeObj) {
-      dbQuery = dbQuery.eq("resource_type_id", typeObj.id);
+      resources = resources.filter(r => r.resource_type_id === typeObj.id);
     }
   }
 
   if (selectedSubject) {
-    dbQuery = dbQuery.eq("subject_id", selectedSubject);
+    resources = resources.filter(r => r.subject_id === selectedSubject);
   }
 
   if (searchTerm) {
-    dbQuery = dbQuery.ilike("title", `%${searchTerm}%`);
+    const term = searchTerm.toLowerCase();
+    resources = resources.filter(r => r.title.toLowerCase().includes(term));
   }
-
-  // STAGE 2: Fetch cached subjects and resources concurrently
-  const [subjects, resourcesResult] = await Promise.all([
-    getCachedSubjects(profile?.branch_code || "", selectedSemester),
-    dbQuery.order("created_at", { ascending: false })
-  ]);
-
-  const resourcesRaw = resourcesResult.data;
-  const resources = (resourcesRaw || []) as unknown as Resource[];
 
   // Helper to determine custom tag visual appearance
   const getTypeAppearance = (typeName?: string, isPyq?: boolean) => {

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AnnouncementsClient } from "./announcements-client";
 import type { Announcement } from "@/types/database";
+import { getCachedAnnouncements } from "@/lib/db-cache";
 
 export default async function AnnouncementsPage() {
   const supabase = await createClient();
@@ -13,19 +14,16 @@ export default async function AnnouncementsPage() {
 
   const db = supabase as any;
 
-  // Fetch all announcements and the student's reads concurrently
-  const [announcementsResult, readsResult] = await Promise.all([
-    db
-      .from("announcements")
-      .select("*")
-      .order("created_at", { ascending: false }) as any,
+  // Fetch cached announcements (shared across all students, 10-min cache) 
+  // and per-user reads concurrently
+  const [announcements, readsResult] = await Promise.all([
+    getCachedAnnouncements(),
     db
       .from("announcement_reads")
       .select("announcement_id")
       .eq("user_id", user.id) as any
   ]);
 
-  const announcements = announcementsResult.data;
   const reads = readsResult.data;
 
   const readIds = (reads ?? []).map(

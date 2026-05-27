@@ -53,7 +53,15 @@ export async function GET(
     }
 
     // Return the signed URL for inline browser view (application/pdf)
-    return NextResponse.json({ url: signedUrl });
+    // Cache for 45 min — browser will serve from cache on back-navigation
+    return NextResponse.json(
+      { url: signedUrl },
+      {
+        headers: {
+          "Cache-Control": "private, max-age=2700",
+        },
+      }
+    );
   } catch (error) {
     console.error("Cloudinary error:", error);
     return NextResponse.json({ error: "Failed to generate access URL" }, { status: 500 });
