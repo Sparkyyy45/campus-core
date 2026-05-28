@@ -19,17 +19,17 @@ export const getCachedSubjects = unstable_cache(
       .select("id, name")
       .eq("branch_code", branchCode)
       .eq("semester", semester);
-    
+
     if (error) {
       console.error("getCachedSubjects DB error:", error);
-      return [];
+      throw new Error(`Failed to fetch subjects: ${error.message}`);
     }
     return data || [];
   },
   ["subjects-by-branch-sem"],
   {
     revalidate: 86400, // 24 hours
-    tags: ["subjects"]
+    tags: ["subjects"],
   }
 );
 
@@ -42,17 +42,17 @@ export const getCachedResourceTypes = unstable_cache(
     const { data, error } = await supabase
       .from("resource_types")
       .select("id, name, is_pyq");
-    
+
     if (error) {
       console.error("getCachedResourceTypes DB error:", error);
-      return [];
+      throw new Error(`Failed to fetch resource types: ${error.message}`);
     }
     return data || [];
   },
   ["static-resource-types"],
   {
     revalidate: 86400, // 24 hours
-    tags: ["resource-types"]
+    tags: ["resource-types"],
   }
 );
 
@@ -66,7 +66,8 @@ export const getCachedResources = unstable_cache(
   async (branchCode: string, semester: number) => {
     const { data, error } = await (supabase as any)
       .from("resources")
-      .select(`
+      .select(
+        `
         id, 
         title, 
         description, 
@@ -76,22 +77,23 @@ export const getCachedResources = unstable_cache(
         subject_id,
         subjects (name),
         resource_types (name, is_pyq)
-      `)
+      `
+      )
       .eq("branch_code", branchCode)
       .eq("semester", semester)
       .eq("status", "PUBLISHED")
       .order("created_at", { ascending: false });
-    
+
     if (error) {
       console.error("getCachedResources DB error:", error);
-      return [];
+      throw new Error(`Failed to fetch resources: ${error.message}`);
     }
     return data || [];
   },
   ["resources-by-branch-sem"],
   {
     revalidate: 300, // 5 minutes
-    tags: ["resources"]
+    tags: ["resources"],
   }
 );
 
@@ -105,17 +107,16 @@ export const getCachedAnnouncements = unstable_cache(
       .from("announcements")
       .select("*")
       .order("created_at", { ascending: false });
-    
+
     if (error) {
       console.error("getCachedAnnouncements DB error:", error);
-      return [];
+      throw new Error(`Failed to fetch announcements: ${error.message}`);
     }
     return data || [];
   },
   ["all-announcements"],
   {
     revalidate: 600, // 10 minutes
-    tags: ["announcements"]
+    tags: ["announcements"],
   }
 );
-

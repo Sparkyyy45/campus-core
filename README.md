@@ -34,6 +34,31 @@ Unlike traditional file-sharing hubs, CampusCore is built around **privacy-first
 
 ---
 
+## 📐 Core Architecture & System Topology
+
+The diagram below details the operational boundaries and secure network integrations between the Next.js edge runtime, Supabase databases, Cloudinary secure asset storage, and monitoring layers:
+
+```mermaid
+graph TD
+    Client[Student/Admin Browser] <-->|HTTPS / Dynamic Routes| Vercel[Vercel Serverless Edge]
+    Vercel <-->|Auth Session & RLS Checks| Supabase[Supabase PostgreSQL]
+    Vercel <-->|Signed Attachment Tokens| Cloudinary[Cloudinary Secure Bucket]
+    Vercel -.->|Error Instrumentation| Sentry[Sentry Tracking]
+    Vercel -.->|Real-User Metrics| VerAn[Vercel Web Analytics]
+
+    subgraph Supabase Security Boundary
+        Supabase -.->|Row-Level Security RLS| AuthUsers[auth.users]
+        Supabase -.->|Cascaded Profile Purge| Profiles[public.profiles]
+        Supabase -.->|Relation Schemas| DataTables[resources, roadmaps, announcements, subjects]
+    end
+    
+    subgraph Cloudinary Asset CDN
+        Cloudinary -.->|Raw PDF Isolation| PDF[Study Handouts & PYQ Files]
+    end
+```
+
+---
+
 ## ⚙️ Quick Start
 
 ### 1. Installation

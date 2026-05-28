@@ -2,13 +2,7 @@
 
 import { useTransition, useState } from "react";
 import { toast } from "sonner";
-import {
-  Bell,
-  Pin,
-  CheckCheck,
-  Circle,
-  Eye,
-} from "lucide-react";
+import { Bell, Pin, CheckCheck, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   markAnnouncementReadAction,
@@ -36,9 +30,7 @@ export function AnnouncementsClient({
   readIds: string[];
 }) {
   const [isPending, startTransition] = useTransition();
-  const [readIds, setReadIds] = useState<Set<string>>(
-    new Set(initialReadIds)
-  );
+  const [readIds, setReadIds] = useState<Set<string>>(new Set(initialReadIds));
 
   const unreadCount = announcements.filter((a) => !readIds.has(a.id)).length;
 

@@ -57,7 +57,12 @@ export function SubjectsClient({ subjects }: { subjects: Subject[] }) {
         <form action={handleCreate} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="name">Subject Name</Label>
-            <Input id="name" name="name" placeholder="e.g. Data Structures" required />
+            <Input
+              id="name"
+              name="name"
+              placeholder="e.g. Data Structures"
+              required
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="branch_code">Branch</Label>
@@ -69,7 +74,9 @@ export function SubjectsClient({ subjects }: { subjects: Subject[] }) {
             >
               <option value="">Select branch</option>
               {BRANCHES.map((b) => (
-                <option key={b} value={b}>{b.toUpperCase()}</option>
+                <option key={b} value={b}>
+                  {b.toUpperCase()}
+                </option>
               ))}
             </select>
           </div>
@@ -83,7 +90,9 @@ export function SubjectsClient({ subjects }: { subjects: Subject[] }) {
             >
               <option value="">Select semester</option>
               {SEMESTERS.map((s) => (
-                <option key={s} value={s}>Semester {s}</option>
+                <option key={s} value={s}>
+                  Semester {s}
+                </option>
               ))}
             </select>
           </div>
@@ -97,25 +106,37 @@ export function SubjectsClient({ subjects }: { subjects: Subject[] }) {
       <div className="lg:col-span-2 space-y-4">
         {/* Filters */}
         <div className="flex gap-3 flex-wrap">
-          <Select onValueChange={(v: string | null) => setBranch(!v || v === "all" ? "" : v)}>
+          <Select
+            onValueChange={(v: string | null) =>
+              setBranch(!v || v === "all" ? "" : v)
+            }
+          >
             <SelectTrigger className="w-36">
               <SelectValue placeholder="All branches" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All branches</SelectItem>
               {BRANCHES.map((b) => (
-                <SelectItem key={b} value={b}>{b.toUpperCase()}</SelectItem>
+                <SelectItem key={b} value={b}>
+                  {b.toUpperCase()}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select onValueChange={(v: string | null) => setSemester(!v || v === "all" ? "" : v)}>
+          <Select
+            onValueChange={(v: string | null) =>
+              setSemester(!v || v === "all" ? "" : v)
+            }
+          >
             <SelectTrigger className="w-36">
               <SelectValue placeholder="All semesters" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All semesters</SelectItem>
               {SEMESTERS.map((s) => (
-                <SelectItem key={s} value={String(s)}>Sem {s}</SelectItem>
+                <SelectItem key={s} value={String(s)}>
+                  Sem {s}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -127,7 +148,9 @@ export function SubjectsClient({ subjects }: { subjects: Subject[] }) {
         {filtered.length === 0 ? (
           <div className="campus-card text-center py-12 text-muted-foreground">
             <GraduationCap className="h-8 w-8 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No subjects found. Add one to get started.</p>
+            <p className="text-sm">
+              No subjects found. Add one to get started.
+            </p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -147,6 +170,7 @@ export function SubjectsClient({ subjects }: { subjects: Subject[] }) {
                   disabled={isPending}
                   className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                   title="Delete subject"
+                  aria-label="Delete subject"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

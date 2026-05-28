@@ -7,16 +7,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createAnnouncementAction, togglePinAction, deleteAnnouncementAction } from "./actions";
+import {
+  createAnnouncementAction,
+  togglePinAction,
+  deleteAnnouncementAction,
+} from "./actions";
 import type { Announcement } from "@/types/database";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-IN", {
-    day: "numeric", month: "short", year: "numeric",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 }
 
-export function AnnouncementsClient({ announcements }: { announcements: Announcement[] }) {
+export function AnnouncementsClient({
+  announcements,
+}: {
+  announcements: Announcement[];
+}) {
   const [isPending, startTransition] = useTransition();
   const [showForm, setShowForm] = useState(false);
 
@@ -52,9 +62,14 @@ export function AnnouncementsClient({ announcements }: { announcements: Announce
       {/* Create button */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {announcements.length} announcement{announcements.length !== 1 ? "s" : ""}
+          {announcements.length} announcement
+          {announcements.length !== 1 ? "s" : ""}
         </p>
-        <Button onClick={() => setShowForm(!showForm)} size="sm" className="gap-2">
+        <Button
+          onClick={() => setShowForm(!showForm)}
+          size="sm"
+          className="gap-2"
+        >
           <Plus className="h-4 w-4" />
           New Announcement
         </Button>
@@ -70,7 +85,12 @@ export function AnnouncementsClient({ announcements }: { announcements: Announce
           <form action={handleCreate} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="title">Title</Label>
-              <Input id="title" name="title" placeholder="e.g. Mid-sem schedule released" required />
+              <Input
+                id="title"
+                name="title"
+                placeholder="e.g. Mid-sem schedule released"
+                required
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="content">Content</Label>
@@ -83,7 +103,12 @@ export function AnnouncementsClient({ announcements }: { announcements: Announce
               />
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="is_pinned" name="is_pinned" className="h-4 w-4 rounded border-border" />
+              <input
+                type="checkbox"
+                id="is_pinned"
+                name="is_pinned"
+                className="h-4 w-4 rounded border-border"
+              />
               <Label htmlFor="is_pinned" className="cursor-pointer text-sm">
                 Pin to top (students will see this prominently)
               </Label>
@@ -93,7 +118,11 @@ export function AnnouncementsClient({ announcements }: { announcements: Announce
                 <Bell className="h-4 w-4" />
                 {isPending ? "Posting..." : "Post Announcement"}
               </Button>
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowForm(false)}
+              >
                 Cancel
               </Button>
             </div>
@@ -135,14 +164,20 @@ export function AnnouncementsClient({ announcements }: { announcements: Announce
                   onClick={() => handleTogglePin(a.id, a.is_pinned)}
                   disabled={isPending}
                   title={a.is_pinned ? "Unpin" : "Pin"}
+                  aria-label={a.is_pinned ? "Unpin" : "Pin"}
                   className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                 >
-                  {a.is_pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+                  {a.is_pinned ? (
+                    <PinOff className="h-4 w-4" />
+                  ) : (
+                    <Pin className="h-4 w-4" />
+                  )}
                 </button>
                 <button
                   onClick={() => handleDelete(a.id)}
                   disabled={isPending}
                   title="Delete"
+                  aria-label="Delete announcement"
                   className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />

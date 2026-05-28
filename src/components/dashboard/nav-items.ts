@@ -1,16 +1,13 @@
-// src/components/dashboard/nav-items.ts
-import { 
-  Home, 
-  Compass, 
-  BookOpen, 
-  FileText, 
-  Map, 
-  Heart, 
-  PlusSquare, 
+import {
+  Home,
+  Compass,
+  BookOpen,
+  FileText,
+  Map,
+  Heart,
+  PlusSquare,
   Users,
-  Settings,
-  GraduationCap,
-  LayoutDashboard
+  LayoutDashboard,
 } from "lucide-react";
 
 export interface NavItem {

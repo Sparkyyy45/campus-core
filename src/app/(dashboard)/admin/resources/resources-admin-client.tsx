@@ -2,12 +2,25 @@
 
 import { useState, useTransition, useRef } from "react";
 import { toast } from "sonner";
-import { Upload, Trash2, Plus, FileText, Eye, EyeOff, Loader2, X } from "lucide-react";
+import {
+  Upload,
+  Trash2,
+  Plus,
+  FileText,
+  Eye,
+  EyeOff,
+  Loader2,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createResourceAction, deleteResourceAction, updateResourceStatusAction } from "./actions";
+import {
+  createResourceAction,
+  deleteResourceAction,
+  updateResourceStatusAction,
+} from "./actions";
 import type { Subject, ResourceType } from "@/types/database";
 
 type ResourceRow = {
@@ -68,7 +81,14 @@ export function ResourcesAdminClient({
       return;
     }
 
-    setUploadState({ uploading: true, progress: 0, fileName: file.name, publicId: "", url: "", sizeBytes: file.size });
+    setUploadState({
+      uploading: true,
+      progress: 0,
+      fileName: file.name,
+      publicId: "",
+      url: "",
+      sizeBytes: file.size,
+    });
 
     try {
       // 1. Get signature from our secure API
@@ -78,7 +98,8 @@ export function ResourcesAdminClient({
         body: JSON.stringify({ folder: "campuscore/resources" }),
       });
       if (!sigRes.ok) throw new Error("Failed to get upload signature");
-      const { signature, timestamp, cloud_name, api_key, folder } = await sigRes.json();
+      const { signature, timestamp, cloud_name, api_key, folder } =
+        await sigRes.json();
 
       // 2. Upload directly to Cloudinary
       const formData = new FormData();
@@ -134,10 +155,10 @@ export function ResourcesAdminClient({
     });
   }
 
-  function handleDelete(id: string, cloudinaryPublicId: string) {
+  function handleDelete(id: string) {
     if (!confirm("Delete this resource? This cannot be undone.")) return;
     startTransition(async () => {
-      const result = await deleteResourceAction(id, cloudinaryPublicId);
+      const result = await deleteResourceAction(id);
       if (result.error) toast.error(result.error);
       else toast.success(result.success);
     });
@@ -146,7 +167,10 @@ export function ResourcesAdminClient({
   function handleToggleStatus(id: string, current: string) {
     const next = current === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
     startTransition(async () => {
-      const result = await updateResourceStatusAction(id, next as "DRAFT" | "PUBLISHED");
+      const result = await updateResourceStatusAction(
+        id,
+        next as "DRAFT" | "PUBLISHED"
+      );
       if (result.error) toast.error(result.error);
       else toast.success(result.success);
     });
@@ -155,8 +179,14 @@ export function ResourcesAdminClient({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{resources.length} resources total</p>
-        <Button onClick={() => setShowUpload(!showUpload)} size="sm" className="gap-2">
+        <p className="text-sm text-muted-foreground">
+          {resources.length} resources total
+        </p>
+        <Button
+          onClick={() => setShowUpload(!showUpload)}
+          size="sm"
+          className="gap-2"
+        >
           <Plus className="h-4 w-4" />
           Upload Resource
         </Button>
@@ -170,7 +200,13 @@ export function ResourcesAdminClient({
               <Upload className="h-4 w-4 text-primary" />
               Upload New Resource
             </h2>
-            <button onClick={() => { setShowUpload(false); setUploadState(null); }} className="text-muted-foreground hover:text-foreground">
+            <button
+              onClick={() => {
+                setShowUpload(false);
+                setUploadState(null);
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -183,16 +219,26 @@ export function ResourcesAdminClient({
             {uploadState?.uploading ? (
               <div className="flex flex-col items-center gap-3">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">Uploading to Cloudinary...</p>
+                <p className="text-sm text-muted-foreground">
+                  Uploading to Cloudinary...
+                </p>
               </div>
             ) : uploadState?.publicId ? (
               <div className="flex flex-col items-center gap-3">
                 <FileText className="h-8 w-8 text-green-500" />
                 <p className="text-sm font-medium">{uploadState.fileName}</p>
                 <p className="text-xs text-muted-foreground">
-                  {(uploadState.sizeBytes / 1024 / 1024).toFixed(2)} MB · Uploaded ✓
+                  {(uploadState.sizeBytes / 1024 / 1024).toFixed(2)} MB ·
+                  Uploaded ✓
                 </p>
-                <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setUploadState(null); }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setUploadState(null);
+                  }}
+                >
                   Choose different file
                 </Button>
               </div>
@@ -200,22 +246,40 @@ export function ResourcesAdminClient({
               <div className="flex flex-col items-center gap-3">
                 <Upload className="h-8 w-8 text-muted-foreground/40" />
                 <p className="text-sm font-medium">Click to upload a PDF</p>
-                <p className="text-xs text-muted-foreground">Max 50 MB · PDF only</p>
+                <p className="text-xs text-muted-foreground">
+                  Max 50 MB · PDF only
+                </p>
               </div>
             )}
           </div>
-          <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileSelect} />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handleFileSelect}
+          />
 
           {/* Metadata form */}
           <form action={handleCreate} className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2 space-y-1.5">
                 <Label htmlFor="title">Title *</Label>
-                <Input id="title" name="title" placeholder="e.g. Data Structures Unit 3 Notes" required />
+                <Input
+                  id="title"
+                  name="title"
+                  placeholder="e.g. Data Structures Unit 3 Notes"
+                  required
+                />
               </div>
               <div className="sm:col-span-2 space-y-1.5">
                 <Label htmlFor="description">Description (optional)</Label>
-                <Textarea id="description" name="description" placeholder="Brief description..." rows={2} />
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Brief description..."
+                  rows={2}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="branch_code">Branch *</Label>
@@ -227,7 +291,11 @@ export function ResourcesAdminClient({
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">Select branch</option>
-                  {BRANCHES.map((b) => <option key={b} value={b}>{b.toUpperCase()}</option>)}
+                  {BRANCHES.map((b) => (
+                    <option key={b} value={b}>
+                      {b.toUpperCase()}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="space-y-1.5">
@@ -240,7 +308,11 @@ export function ResourcesAdminClient({
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">Select semester</option>
-                  {SEMESTERS.map((s) => <option key={s} value={s}>Semester {s}</option>)}
+                  {SEMESTERS.map((s) => (
+                    <option key={s} value={s}>
+                      Semester {s}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="space-y-1.5">
@@ -253,7 +325,9 @@ export function ResourcesAdminClient({
                 >
                   <option value="">Select subject</option>
                   {filteredSubjects.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -267,7 +341,9 @@ export function ResourcesAdminClient({
                 >
                   <option value="">Select type</option>
                   {resourceTypes.map((rt) => (
-                    <option key={rt.id} value={rt.id}>{rt.name}</option>
+                    <option key={rt.id} value={rt.id}>
+                      {rt.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -295,14 +371,21 @@ export function ResourcesAdminClient({
               </div>
             </div>
             <div className="flex gap-3 pt-2">
-              <Button type="submit" disabled={isPending || !uploadState?.publicId} className="gap-2">
+              <Button
+                type="submit"
+                disabled={isPending || !uploadState?.publicId}
+                className="gap-2"
+              >
                 <Upload className="h-4 w-4" />
                 {isPending ? "Saving..." : "Save Resource"}
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => { setShowUpload(false); setUploadState(null); }}
+                onClick={() => {
+                  setShowUpload(false);
+                  setUploadState(null);
+                }}
               >
                 Cancel
               </Button>
@@ -323,17 +406,32 @@ export function ResourcesAdminClient({
             <table className="w-full text-sm">
               <thead className="border-b border-border bg-muted/30">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">Title</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Subject</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden lg:table-cell">Branch · Sem</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
-                  <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">
+                    Title
+                  </th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">
+                    Subject
+                  </th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden lg:table-cell">
+                    Branch · Sem
+                  </th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">
+                    Status
+                  </th>
+                  <th className="text-right px-4 py-3 font-medium text-muted-foreground">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {resources.map((r) => (
-                  <tr key={r.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-4 py-3 font-medium truncate max-w-[200px]">{r.title}</td>
+                  <tr
+                    key={r.id}
+                    className="hover:bg-muted/20 transition-colors"
+                  >
+                    <td className="px-4 py-3 font-medium truncate max-w-[200px]">
+                      {r.title}
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
                       {r.subjects?.name ?? "—"}
                     </td>
@@ -341,11 +439,13 @@ export function ResourcesAdminClient({
                       {r.branch_code.toUpperCase()} · Sem {r.semester}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        r.status === "PUBLISHED"
-                          ? "bg-green-50 text-green-700 border border-green-200"
-                          : "bg-amber-50 text-amber-700 border border-amber-200"
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                          r.status === "PUBLISHED"
+                            ? "bg-green-50 text-green-700 border border-green-200"
+                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                        }`}
+                      >
                         {r.status}
                       </span>
                     </td>
@@ -354,15 +454,29 @@ export function ResourcesAdminClient({
                         <button
                           onClick={() => handleToggleStatus(r.id, r.status)}
                           disabled={isPending}
-                          title={r.status === "PUBLISHED" ? "Move to draft" : "Publish"}
+                          title={
+                            r.status === "PUBLISHED"
+                              ? "Move to draft"
+                              : "Publish"
+                          }
+                          aria-label={
+                            r.status === "PUBLISHED"
+                              ? "Move to draft"
+                              : "Publish"
+                          }
                           className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                         >
-                          {r.status === "PUBLISHED" ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          {r.status === "PUBLISHED" ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
                         </button>
                         <button
-                          onClick={() => handleDelete(r.id, r.cloudinary_public_id)}
+                          onClick={() => handleDelete(r.id)}
                           disabled={isPending}
                           title="Delete"
+                          aria-label="Delete resource"
                           className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />

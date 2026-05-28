@@ -2,7 +2,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AnnouncementsClient } from "./announcements-client";
-import type { Announcement } from "@/types/database";
 import { getCachedAnnouncements } from "@/lib/db-cache";
 
 export default async function AnnouncementsPage() {
@@ -14,14 +13,14 @@ export default async function AnnouncementsPage() {
 
   const db = supabase as any;
 
-  // Fetch cached announcements (shared across all students, 10-min cache) 
+  // Fetch cached announcements (shared across all students, 10-min cache)
   // and per-user reads concurrently
   const [announcements, readsResult] = await Promise.all([
     getCachedAnnouncements(),
     db
       .from("announcement_reads")
       .select("announcement_id")
-      .eq("user_id", user.id) as any
+      .eq("user_id", user.id) as any,
   ]);
 
   const reads = readsResult.data;

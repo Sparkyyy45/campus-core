@@ -10,17 +10,14 @@ import { Eye, EyeOff, GraduationCap, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { loginAction } from "@/app/auth/actions";
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
-import { createClient } from "@/lib/supabase/client";
 
 function LoginContent() {
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const redirectedFrom = searchParams.get("redirectedFrom");
   const message = searchParams.get("message");
   const errorParam = searchParams.get("error");
   const errorDetails = searchParams.get("details");
@@ -30,8 +27,9 @@ function LoginContent() {
     if (window.location.hash) {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const errorCode = hashParams.get("error_code");
-      const hashError = hashParams.get("error_description") || hashParams.get("error");
-      
+      const hashError =
+        hashParams.get("error_description") || hashParams.get("error");
+
       if (errorCode === "otp_expired") {
         // Clean up the URL to prevent showing the error again on back navigation
         window.history.replaceState(null, "", window.location.pathname);
@@ -39,7 +37,7 @@ function LoginContent() {
         window.location.href = "/forgot-password?error=expired_scanner";
         return;
       }
-      
+
       if (hashError) {
         toast.error(hashError.replace(/\+/g, " "));
         // Clean up the URL to prevent showing the error again on refresh
@@ -94,7 +92,8 @@ function LoginContent() {
         {/* Success message (e.g., after password reset) */}
         {message === "password-reset-success" && (
           <div className="mb-5 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
-            Password updated successfully. Please sign in with your new password.
+            Password updated successfully. Please sign in with your new
+            password.
           </div>
         )}
 
@@ -112,7 +111,9 @@ function LoginContent() {
               {...register("email")}
             />
             {errors.email && (
-              <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
+              <p className="text-xs text-destructive mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -152,7 +153,9 @@ function LoginContent() {
               </button>
             </div>
             {errors.password && (
-              <p className="text-xs text-destructive mt-1">{errors.password.message}</p>
+              <p className="text-xs text-destructive mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -188,13 +191,15 @@ function LoginContent() {
 
 export function LoginForm() {
   return (
-    <Suspense fallback={
-      <div className="auth-container">
-        <div className="flex items-center justify-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    <Suspense
+      fallback={
+        <div className="auth-container">
+          <div className="flex items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <LoginContent />
     </Suspense>
   );

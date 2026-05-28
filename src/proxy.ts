@@ -1,9 +1,9 @@
-// src/middleware.ts
-// Root middleware — runs on every matched request
+// src/proxy.ts
+// Root proxy router — runs on every matched request (Next.js 16 convention)
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }
 

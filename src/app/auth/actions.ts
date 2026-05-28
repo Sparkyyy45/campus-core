@@ -10,6 +10,10 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
 } from "@/lib/validations/auth";
+import { getAppUrl } from "@/lib/url";
+import { headers } from "next/headers";
+import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export type ActionResult = {
   error?: string;
@@ -65,7 +69,7 @@ export async function signUpAction(formData: FormData): Promise<ActionResult> {
         semester,
         year,
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      emailRedirectTo: `${getAppUrl()}/auth/callback`,
     },
   });
 
@@ -89,6 +93,19 @@ export async function signUpAction(formData: FormData): Promise<ActionResult> {
 // ─── LOG IN ──────────────────────────────────────────────────────────────────
 
 export async function loginAction(formData: FormData): Promise<ActionResult> {
+  const headerList = await headers();
+  const ip =
+    headerList.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
+
+  // Enforce IP-based rate limiting (Max 5 attempts per minute per IP)
+  const limitRes = rateLimit(`login:${ip}`, 5, 60000);
+  if (!limitRes.success) {
+    logger.warn("Login attempt rate limited", { ip });
+    return {
+      error: `Too many login attempts. Please try again in ${limitRes.reset} seconds.`,
+    };
+  }
+
   const raw = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
@@ -113,14 +130,16 @@ export async function loginAction(formData: FormData): Promise<ActionResult> {
     };
   }
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (user) {
-    const { data: profile } = await supabase
+    const { data: profile } = (await supabase
       .from("profiles")
       .select("role")
       .eq("id", user.id)
-      .maybeSingle() as { data: { role: string } | null; error: unknown };
-    
+      .maybeSingle()) as { data: { role: string } | null; error: unknown };
+
     revalidatePath("/", "layout");
     if (profile?.role === "ADMIN") {
       redirect("/admin");
@@ -159,7 +178,7 @@ export async function forgotPasswordAction(
   const { error } = await supabase.auth.resetPasswordForEmail(
     result.data.email,
     {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/reset-password`,
+      redirectTo: `${getAppUrl()}/auth/callback?next=/reset-password`,
     }
   );
 

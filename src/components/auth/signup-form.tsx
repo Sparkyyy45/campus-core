@@ -5,7 +5,13 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Eye, EyeOff, GraduationCap, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  GraduationCap,
+  Loader2,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,8 +29,6 @@ import {
   VALID_BRANCH_CODES,
   getValidAdmissionYears,
 } from "@/lib/roll-validation";
-import { Separator } from "@/components/ui/separator";
-import { createClient } from "@/lib/supabase/client";
 
 export function SignupForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -49,9 +53,11 @@ export function SignupForm() {
   async function onSubmit(data: SignupFormData) {
     startTransition(async () => {
       const formData = new FormData();
-      (Object.entries(data) as [string, string | number][]).forEach(([key, value]) => {
-        formData.append(key, String(value));
-      });
+      (Object.entries(data) as [string, string | number][]).forEach(
+        ([key, value]) => {
+          formData.append(key, String(value));
+        }
+      );
 
       const result = await signUpAction(formData);
       if (result?.error) {
@@ -126,7 +132,9 @@ export function SignupForm() {
               {...register("full_name")}
             />
             {errors.full_name && (
-              <p className="text-xs text-destructive">{errors.full_name.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.full_name.message}
+              </p>
             )}
           </div>
 
@@ -164,7 +172,9 @@ export function SignupForm() {
               Format: YY + branch code + 6 digits (e.g., 25cs003496)
             </p>
             {errors.roll_no && (
-              <p className="text-xs text-destructive">{errors.roll_no.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.roll_no.message}
+              </p>
             )}
           </div>
 
@@ -173,22 +183,30 @@ export function SignupForm() {
             <div className="space-y-1.5">
               <Label htmlFor="branch_code">Branch</Label>
               <Select
-                onValueChange={(val) => setValue("branch_code", (val ?? "") as string)}
+                onValueChange={(val) =>
+                  setValue("branch_code", (val ?? "") as string)
+                }
                 disabled={isPending}
               >
-                <SelectTrigger id="branch_code" aria-invalid={!!errors.branch_code}>
+                <SelectTrigger
+                  id="branch_code"
+                  aria-invalid={!!errors.branch_code}
+                >
                   <SelectValue placeholder="Select branch" />
                 </SelectTrigger>
                 <SelectContent>
                   {VALID_BRANCH_CODES.map((code) => (
                     <SelectItem key={code} value={code}>
-                      {code.toUpperCase()} — {BRANCH_MAP[code].split(" ").slice(0, 2).join(" ")}
+                      {code.toUpperCase()} —{" "}
+                      {BRANCH_MAP[code].split(" ").slice(0, 2).join(" ")}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {errors.branch_code && (
-                <p className="text-xs text-destructive">{errors.branch_code.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.branch_code.message}
+                </p>
               )}
             </div>
 
@@ -210,7 +228,9 @@ export function SignupForm() {
                 </SelectContent>
               </Select>
               {errors.year && (
-                <p className="text-xs text-destructive">{errors.year.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.year.message}
+                </p>
               )}
             </div>
           </div>
@@ -235,7 +255,9 @@ export function SignupForm() {
               </SelectContent>
             </Select>
             {errors.semester && (
-              <p className="text-xs text-destructive">{errors.semester.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.semester.message}
+              </p>
             )}
           </div>
 
@@ -259,11 +281,17 @@ export function SignupForm() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.password && (
-              <p className="text-xs text-destructive">{errors.password.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -283,15 +311,25 @@ export function SignupForm() {
               />
               <button
                 type="button"
-                aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"}
+                aria-label={
+                  showConfirm
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
                 onClick={() => setShowConfirm(!showConfirm)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showConfirm ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.confirm_password && (
-              <p className="text-xs text-destructive">{errors.confirm_password.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.confirm_password.message}
+              </p>
             )}
           </div>
 
@@ -313,7 +351,10 @@ export function SignupForm() {
 
         <p className="mt-5 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-primary hover:underline">
+          <Link
+            href="/login"
+            className="font-semibold text-primary hover:underline"
+          >
             Sign in
           </Link>
         </p>
