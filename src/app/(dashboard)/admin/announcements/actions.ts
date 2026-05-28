@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { announcementSchema } from "@/lib/validations/admin";
 import { verifyAdmin } from "@/lib/supabase/admin";
 
@@ -38,7 +38,11 @@ export async function createAnnouncementAction(
   } as any);
 
   if (error) return { error: error.message };
+
+  revalidateTag("announcements", "max");
   revalidatePath("/admin/announcements");
+  revalidatePath("/announcements");
+  revalidatePath("/dashboard");
   return { success: "Announcement posted." };
 }
 
@@ -54,7 +58,10 @@ export async function togglePinAction(
     .eq("id", id);
   if (error) return { error: error.message };
 
+  revalidateTag("announcements", "max");
   revalidatePath("/admin/announcements");
+  revalidatePath("/announcements");
+  revalidatePath("/dashboard");
   return { success: is_pinned ? "Unpinned." : "Pinned." };
 }
 
@@ -69,6 +76,9 @@ export async function deleteAnnouncementAction(
     .eq("id", id);
   if (error) return { error: error.message };
 
+  revalidateTag("announcements", "max");
   revalidatePath("/admin/announcements");
+  revalidatePath("/announcements");
+  revalidatePath("/dashboard");
   return { success: "Announcement deleted." };
 }

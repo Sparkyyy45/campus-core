@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import cloudinary from "@/lib/cloudinary";
 import { resourceSchema } from "@/lib/validations/admin";
 import { verifyAdmin } from "@/lib/supabase/admin";
@@ -76,6 +76,7 @@ export async function createResourceAction(
     return { error: error.message };
   }
 
+  revalidateTag("resources", "max");
   revalidatePath("/admin/resources");
   revalidatePath("/resources");
   return { success: "Resource uploaded and published." };
@@ -112,6 +113,7 @@ export async function deleteResourceAction(
   const { error } = await supabase.from("resources").delete().eq("id", id);
   if (error) return { error: error.message };
 
+  revalidateTag("resources", "max");
   revalidatePath("/admin/resources");
   revalidatePath("/resources");
   return { success: "Resource deleted." };
@@ -129,6 +131,7 @@ export async function updateResourceStatusAction(
     .eq("id", id);
   if (error) return { error: error.message };
 
+  revalidateTag("resources", "max");
   revalidatePath("/admin/resources");
   revalidatePath("/resources");
   return {
