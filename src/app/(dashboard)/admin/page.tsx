@@ -64,11 +64,11 @@ export default async function AdminPage() {
     db.from("resource_downloads").select("*", { count: "exact", head: true }),
   ]);
 
-  // ── Analytics queries (run concurrently) ──
-  // eslint-disable-next-line react-hooks/purity
+  /* eslint-disable react-hooks/purity */
   const sevenDaysAgo = new Date(
     Date.now() - 7 * 24 * 60 * 60 * 1000
   ).toISOString();
+  /* eslint-enable react-hooks/purity */
 
   const [
     recentDownloadsResult,

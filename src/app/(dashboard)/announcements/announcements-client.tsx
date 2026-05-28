@@ -152,12 +152,22 @@ function AnnouncementCard({
   onMarkRead: () => void;
   isPending: boolean;
 }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  function handleCardClick() {
+    setIsExpanded(!isExpanded);
+    if (!isRead) {
+      onMarkRead();
+    }
+  }
+
   return (
     <div
-      className={`rounded-xl border px-5 py-4 transition-all duration-200 ${
+      onClick={handleCardClick}
+      className={`rounded-xl border px-5 py-4 transition-all duration-200 cursor-pointer select-none ${
         isRead
-          ? "border-border bg-card opacity-70"
-          : "border-primary/15 bg-primary/[0.03] shadow-sm"
+          ? "border-border bg-card opacity-70 hover:opacity-100"
+          : "border-primary/15 bg-primary/[0.03] shadow-sm hover:border-primary/30"
       }`}
     >
       <div className="flex items-start justify-between gap-4">
@@ -177,16 +187,28 @@ function AnnouncementCard({
               {announcement.title}
             </h3>
           </div>
-          <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+          <p
+            className={`text-xs text-muted-foreground mt-1 transition-all leading-relaxed ${
+              isExpanded ? "block" : "line-clamp-2"
+            }`}
+          >
             {announcement.content}
           </p>
-          <p className="text-[11px] text-muted-foreground/60 mt-2">
-            {timeAgo(announcement.created_at)}
-          </p>
+          <div className="flex items-center gap-2 mt-2">
+            <p className="text-[11px] text-muted-foreground/60">
+              {timeAgo(announcement.created_at)}
+            </p>
+            <span className="text-[10px] text-primary/70 font-mono">
+              • {isExpanded ? "Click to collapse" : "Click to expand details"}
+            </span>
+          </div>
         </div>
         {!isRead && (
           <button
-            onClick={onMarkRead}
+            onClick={(e) => {
+              e.stopPropagation();
+              onMarkRead();
+            }}
             disabled={isPending}
             className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors shrink-0"
             title="Mark as read"
