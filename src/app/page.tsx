@@ -111,12 +111,6 @@ export default async function LandingPage() {
             >
               Announcements
             </Link>
-            <Link
-              href="/privacy"
-              className="hover:text-foreground transition-colors"
-            >
-              Privacy
-            </Link>
           </nav>
 
           <div className="flex items-center gap-4">
