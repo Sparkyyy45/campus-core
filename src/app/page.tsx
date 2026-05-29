@@ -85,21 +85,11 @@ export default async function LandingPage() {
       {/* Premium Minimalist Header */}
       <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/40 transition-all duration-300">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between max-w-7xl relative">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-xl bg-foreground text-background flex items-center justify-center shadow-inner group transition-transform hover:scale-105">
-              <span className="text-sm font-bold font-serif tracking-tighter">
-                C
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base font-bold tracking-tight leading-none">
-                CampusCore
-              </span>
-              <span className="text-[10px] text-primary font-mono tracking-wider font-semibold uppercase mt-0.5">
-                Academic Hub
-              </span>
-            </div>
-          </div>
+          <Link href="/" className="flex items-center">
+            <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent hover:opacity-90 transition-opacity">
+              CampusCore
+            </span>
+          </Link>
 
           {/* Centered Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground absolute left-1/2 -translate-x-1/2">
@@ -425,11 +415,9 @@ export default async function LandingPage() {
           <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
           <div className="max-w-3xl mx-auto space-y-8 relative z-10">
-            <div className="h-14 w-14 rounded-2xl bg-background text-foreground flex items-center justify-center mx-auto shadow-2xl">
-              <span className="text-2xl font-bold font-serif tracking-tighter">
-                C
-              </span>
-            </div>
+            <span className="block text-3xl font-extrabold tracking-tight text-background">
+              CampusCore
+            </span>
 
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance">
               Access your academic portal today.
@@ -467,16 +455,236 @@ export default async function LandingPage() {
             </div>
           </div>
         </section>
+        <section
+          id="privacy-section"
+          className="border-t border-border/40 py-20 px-6 max-w-4xl mx-auto"
+        >
+          <div className="space-y-6 text-center mb-12">
+            <span className="text-xs font-mono uppercase tracking-widest text-primary font-semibold">
+              Privacy & Data Protection
+            </span>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">
+              Your Data is Completely Safe
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+              We design with privacy at the core. CampusCore strictly complies
+              with India&apos;s Digital Personal Data Protection (DPDP) Act
+              2023. We only collect details essential to serving university
+              notes and securing student resources.
+            </p>
+          </div>
+
+          <div className="space-y-4 max-w-3xl mx-auto border border-border/60 rounded-2xl p-6 bg-card text-left">
+            {/* Accordion 1 */}
+            <details
+              className="group border-b border-border/40 pb-4 [&_summary::-webkit-details-marker]:hidden cursor-pointer"
+              open
+            >
+              <summary className="flex items-center justify-between text-sm font-semibold text-foreground transition-colors hover:text-primary">
+                <span>1. What Personal Information We Process</span>
+                <span className="ml-1.5 shrink-0 rounded-lg bg-muted p-1 text-muted-foreground group-open:rotate-180 transition-transform duration-200">
+                  <svg
+                    className="h-4 w-4 stroke-[1.5]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </span>
+              </summary>
+              <div className="mt-3 leading-relaxed text-xs text-muted-foreground space-y-2 pl-1 transition-all duration-300">
+                <p>
+                  To verify your enrollment at Sir Padampat Singhania University
+                  (SPSU) and tailor your experience, we process:
+                </p>
+                <ul className="list-disc list-inside space-y-1 pl-2">
+                  <li>
+                    <strong>Student Identity Details:</strong> Full name,
+                    official university email address, registry roll number,
+                    branch/department, admission year, and current semester.
+                  </li>
+                  <li>
+                    <strong>Activity Logs:</strong> Timestamped downloads of
+                    notes/PYQs and checklist completions on interactive
+                    roadmaps.
+                  </li>
+                </ul>
+              </div>
+            </details>
+
+            {/* Accordion 2 */}
+            <details className="group border-b border-border/40 py-4 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+              <summary className="flex items-center justify-between text-sm font-semibold text-foreground transition-colors hover:text-primary">
+                <span>2. Explicit Academic Processing Purpose</span>
+                <span className="ml-1.5 shrink-0 rounded-lg bg-muted p-1 text-muted-foreground group-open:rotate-180 transition-transform duration-200">
+                  <svg
+                    className="h-4 w-4 stroke-[1.5]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </span>
+              </summary>
+              <div className="mt-3 leading-relaxed text-xs text-muted-foreground space-y-2 pl-1">
+                <p>
+                  We strictly process your data for the following essential
+                  university operations:
+                </p>
+                <ul className="list-disc list-inside space-y-1 pl-2">
+                  <li>
+                    Restricting document access to registered, authenticated
+                    students based on their actual semester and department
+                    requirements.
+                  </li>
+                  <li>
+                    Generating secure, signed, and time-limited preview links
+                    for faculty notes via private Cloudinary buckets to prevent
+                    external hotlinking.
+                  </li>
+                  <li>
+                    Compiling aggregate, fully anonymous resource analytics to
+                    highlight the most highly demanded syllabus study guides
+                    before examinations.
+                  </li>
+                </ul>
+              </div>
+            </details>
+
+            {/* Accordion 3 */}
+            <details className="group border-b border-border/40 py-4 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+              <summary className="flex items-center justify-between text-sm font-semibold text-foreground transition-colors hover:text-primary">
+                <span>3. Right to Erasure & Complete Purge</span>
+                <span className="ml-1.5 shrink-0 rounded-lg bg-muted p-1 text-muted-foreground group-open:rotate-180 transition-transform duration-200">
+                  <svg
+                    className="h-4 w-4 stroke-[1.5]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </span>
+              </summary>
+              <div className="mt-3 leading-relaxed text-xs text-muted-foreground space-y-2 pl-1">
+                <p>
+                  Under India&apos;s DPDP Act 2023, you hold absolute authority
+                  over your data. You can request a complete, permanent, and
+                  instantaneous deletion of your account and metadata at any
+                  time.
+                </p>
+                <p>
+                  Initiating deletion inside your{" "}
+                  <strong>Profile Settings Danger Zone</strong> instantly runs a
+                  cascade deletion trigger across Supabase PostgreSQL databases,
+                  wiping your auth session, student profile, roadmap checklist
+                  states, and download traces permanently and irreversibly.
+                </p>
+              </div>
+            </details>
+
+            {/* Accordion 4 */}
+            <details className="group border-b border-border/40 py-4 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+              <summary className="flex items-center justify-between text-sm font-semibold text-foreground transition-colors hover:text-primary">
+                <span>4. Safe Third-Party Infrastructure</span>
+                <span className="ml-1.5 shrink-0 rounded-lg bg-muted p-1 text-muted-foreground group-open:rotate-180 transition-transform duration-200">
+                  <svg
+                    className="h-4 w-4 stroke-[1.5]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </span>
+              </summary>
+              <div className="mt-3 leading-relaxed text-xs text-muted-foreground space-y-2 pl-1">
+                <p>
+                  We utilize only secure, world-class storage and application
+                  services under strict data protection protocols. No data is
+                  traded or shared:
+                </p>
+                <ul className="list-disc list-inside space-y-1 pl-2">
+                  <li>
+                    <strong>Supabase:</strong> Encrypted authentication, active
+                    Row-Level Security (RLS), and database hosting.
+                  </li>
+                  <li>
+                    <strong>Cloudinary:</strong> Private study document delivery
+                    via secure 1-hour signed URLs.
+                  </li>
+                  <li>
+                    <strong>Resend:</strong> Routing student suggestions
+                    directly to the development team securely.
+                  </li>
+                  <li>
+                    <strong>Sentry:</strong> Fully anonymous, diagnostic
+                    instrumentation to identify errors and ensure portal uptime.
+                  </li>
+                </ul>
+              </div>
+            </details>
+
+            {/* Accordion 5 */}
+            <details className="group pt-4 [&_summary::-webkit-details-marker]:hidden cursor-pointer">
+              <summary className="flex items-center justify-between text-sm font-semibold text-foreground transition-colors hover:text-primary">
+                <span>5. Contacts, Grievances, & Support</span>
+                <span className="ml-1.5 shrink-0 rounded-lg bg-muted p-1 text-muted-foreground group-open:rotate-180 transition-transform duration-200">
+                  <svg
+                    className="h-4 w-4 stroke-[1.5]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </span>
+              </summary>
+              <div className="mt-3 leading-relaxed text-xs text-muted-foreground space-y-2 pl-1">
+                <p>
+                  For data correction requests, compliance queries, or policy
+                  grievances, please reach out. All security inquiries are
+                  handled directly:
+                </p>
+                <p className="font-semibold text-foreground">
+                  Main Developer: Suyash Yadav (suyashydv23@gmail.com)
+                </p>
+                <p>University Support: campuscore@spsu.ac.in</p>
+              </div>
+            </details>
+          </div>
+        </section>
       </main>
 
       {/* Premium Footer */}
       <footer className="border-t border-border/40 py-12 px-6 bg-background">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2.5 opacity-90">
-            <div className="h-6 w-6 rounded-lg bg-foreground text-background flex items-center justify-center">
-              <span className="text-xs font-bold font-serif">C</span>
-            </div>
-            <span className="text-sm font-bold tracking-tight">CampusCore</span>
+          <div className="flex items-center opacity-90">
+            <span className="text-base font-extrabold tracking-tight">
+              CampusCore
+            </span>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-muted-foreground">

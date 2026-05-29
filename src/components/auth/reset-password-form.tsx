@@ -42,11 +42,10 @@ export function ResetPasswordForm() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
-            <GraduationCap className="h-5 w-5" />
-          </div>
-          <span className="text-xl font-bold text-foreground">CampusCore</span>
+        <div className="flex items-center justify-center mb-8">
+          <span className="text-2xl font-extrabold tracking-tight text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            CampusCore
+          </span>
         </div>
 
         <div className="mb-6">
@@ -78,11 +77,17 @@ export function ResetPasswordForm() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.password && (
-              <p className="text-xs text-destructive">{errors.password.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -101,15 +106,25 @@ export function ResetPasswordForm() {
               />
               <button
                 type="button"
-                aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"}
+                aria-label={
+                  showConfirm
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
                 onClick={() => setShowConfirm(!showConfirm)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showConfirm ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.confirm_password && (
-              <p className="text-xs text-destructive">{errors.confirm_password.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.confirm_password.message}
+              </p>
             )}
           </div>
 

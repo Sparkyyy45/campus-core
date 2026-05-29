@@ -4,7 +4,13 @@ import { useTransition, useState, Suspense } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GraduationCap, Loader2, ArrowLeft, Mail, AlertCircle } from "lucide-react";
+import {
+  GraduationCap,
+  Loader2,
+  ArrowLeft,
+  Mail,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -47,11 +53,10 @@ function ForgotPasswordContent() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
-            <GraduationCap className="h-5 w-5" />
-          </div>
-          <span className="text-xl font-bold text-foreground">CampusCore</span>
+        <div className="flex items-center justify-center mb-8">
+          <span className="text-2xl font-extrabold tracking-tight text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            CampusCore
+          </span>
         </div>
 
         {emailSent ? (
@@ -86,15 +91,21 @@ function ForgotPasswordContent() {
                 Enter your email and we&apos;ll send you a reset link.
               </p>
             </div>
-            
+
             {errorParam === "expired_scanner" && (
               <div className="mb-6 relative w-full rounded-lg border border-red-200 bg-red-50/50 p-4 text-red-800 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-red-800">
                 <AlertCircle className="h-4 w-4" />
-                <h5 className="mb-1 font-medium leading-none tracking-tight pl-7">Link Expired</h5>
+                <h5 className="mb-1 font-medium leading-none tracking-tight pl-7">
+                  Link Expired
+                </h5>
                 <div className="text-xs mt-1 leading-relaxed pl-7">
-                  The link you clicked was already used. This often happens if an <b>Email Scanner</b> (like Outlook Safe Links) clicks the link before you do.
+                  The link you clicked was already used. This often happens if
+                  an <b>Email Scanner</b> (like Outlook Safe Links) clicks the
+                  link before you do.
                   <br className="mb-2" />
-                  <b>To fix this:</b> Request a new link below, then <b>Right-Click {"->"} Copy Link Address</b> in your email and paste it directly into your browser.
+                  <b>To fix this:</b> Request a new link below, then{" "}
+                  <b>Right-Click {"->"} Copy Link Address</b> in your email and
+                  paste it directly into your browser.
                 </div>
               </div>
             )}
@@ -112,7 +123,9 @@ function ForgotPasswordContent() {
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
@@ -148,13 +161,15 @@ function ForgotPasswordContent() {
 
 export function ForgotPasswordForm() {
   return (
-    <Suspense fallback={
-      <div className="auth-container">
-        <div className="flex items-center justify-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    <Suspense
+      fallback={
+        <div className="auth-container">
+          <div className="flex items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <ForgotPasswordContent />
     </Suspense>
   );

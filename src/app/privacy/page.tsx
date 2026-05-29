@@ -30,11 +30,10 @@ export default function PrivacyPolicyPage() {
             <ArrowLeft className="h-4 w-4" />
             Back to Portal
           </Link>
-          <div className="flex items-center gap-2 font-medium tracking-tight">
-            <span className="h-6 w-6 rounded-md bg-[#37352F] text-white flex items-center justify-center font-bold text-xs">
-              C
+          <div className="flex items-center">
+            <span className="text-base font-extrabold tracking-tight text-[#37352F]">
+              CampusCore
             </span>
-            <span>CampusCore</span>
           </div>
         </div>
       </header>
@@ -203,7 +202,10 @@ export default function PrivacyPolicyPage() {
                 or IT Helpdesk:
               </p>
               <p className="text-sm font-medium text-[#37352F] pt-1">
-                📧 Email:{" "}
+                Main Developer: Suyash Yadav (suyashydv23@gmail.com)
+              </p>
+              <p className="text-sm font-medium text-[#37352F] pt-1">
+                Email:{" "}
                 <Link
                   href="mailto:campuscore@spsu.ac.in"
                   className="underline hover:text-blue-600"

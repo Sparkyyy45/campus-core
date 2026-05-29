@@ -102,11 +102,10 @@ export function SignupForm() {
     <div className="auth-container">
       <div className="auth-card">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2.5 mb-7">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
-            <GraduationCap className="h-5 w-5" />
-          </div>
-          <span className="text-xl font-bold text-foreground">CampusCore</span>
+        <div className="flex items-center justify-center mb-7">
+          <span className="text-2xl font-extrabold tracking-tight text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            CampusCore
+          </span>
         </div>
 
         <div className="mb-6">

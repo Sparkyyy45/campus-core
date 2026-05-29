@@ -57,13 +57,14 @@ export function Sidebar({
     >
       {/* Brand Header — Minimalist Line-Art Concept */}
       <div className="flex h-20 items-center px-6 border-b border-[#EAEAEA]">
-        <Link href="/dashboard" className="flex items-center gap-3 w-full">
-          <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] bg-[#F7F7F7] border border-[#EAEAEA] text-[#37352F]">
-            <GraduationCap className="h-4 w-4 stroke-[1.5]" />
-          </div>
-          {!isCollapsed && (
-            <span className="text-xs font-semibold tracking-widest text-[#37352F] uppercase font-mono">
+        <Link href="/dashboard" className="flex items-center w-full px-2">
+          {!isCollapsed ? (
+            <span className="text-lg font-extrabold tracking-tight text-[#37352F]">
               CampusCore
+            </span>
+          ) : (
+            <span className="text-lg font-extrabold tracking-tight text-[#37352F]">
+              CC
             </span>
           )}
         </Link>
