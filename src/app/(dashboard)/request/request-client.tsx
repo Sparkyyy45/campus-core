@@ -42,7 +42,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
           borderColor: "hover:border-blue-500/40",
           activeColor: "bg-blue-500/5 border-blue-500/40 text-blue-500",
           messageLabel:
-            "Explain what notes, slides, or question papers you need 📝",
+            "Explain what notes, slides, or question papers you need",
           messagePlaceholder:
             "e.g. I really need Unit 3 and 4 lecture slides from Dr. Smith, or PYQs from 2023 to 2024 for our upcoming sessional exams...",
           messageHelp: "Explain exactly what unit notes or papers are missing.",
@@ -54,7 +54,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
           iconColor: "text-red-500",
           borderColor: "hover:border-red-500/40",
           activeColor: "bg-red-500/5 border-red-500/40 text-red-500",
-          messageLabel: "Describe the bug or issue you encountered 🐛",
+          messageLabel: "Describe the bug or issue you encountered",
           messagePlaceholder:
             "e.g. When I try to download a PDF file from the Roadmap section on my phone, the button doesn't respond, or the subject selection dropdown is cut off...",
           messageHelp:
@@ -67,7 +67,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
           iconColor: "text-purple-500",
           borderColor: "hover:border-purple-500/40",
           activeColor: "bg-purple-500/5 border-purple-500/40 text-purple-500",
-          messageLabel: "Describe your feature suggestion 💡",
+          messageLabel: "Describe your feature suggestion",
           messagePlaceholder:
             "e.g. It would be awesome if we had a dashboard calendar showing our midterms, assignment deadlines, and sessional schedules...",
           messageHelp:
@@ -81,7 +81,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
           borderColor: "hover:border-emerald-500/40",
           activeColor:
             "bg-emerald-500/5 border-emerald-500/40 text-emerald-500",
-          messageLabel: "Tell us about your experience using the site 💬",
+          messageLabel: "Tell us about your experience using the site",
           messagePlaceholder:
             "e.g. The new direct file opening system is so fast! I love how clean the home page looks and the custom dashboard widgets are super handy...",
           messageHelp:
@@ -120,7 +120,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
       } else {
         setSubmittedSuccess(true);
         toast.success(
-          res.success || "Submitted! Sent directly to Suyash's inbox 📨"
+          res.success || "Submitted! Sent directly to Suyash's inbox"
         );
       }
     });
@@ -149,13 +149,13 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
-            Hey {firstName}! 👋
+            Hey {firstName}
           </h1>
 
           <p className="text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
             Need notes, found a bug, want a new feature built, or just want to
             tell us about your experience? Write it below and it will be sent
-            **directly to Suyash&apos;s email inbox**!
+            directly to Suyash&apos;s email inbox.
           </p>
         </div>
 
@@ -165,7 +165,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
             Inbox Alert
           </span>
           <div className="text-sm font-black text-emerald-500 flex items-center gap-1.5 dark:text-emerald-400">
-            Active ⚡
+            Active
           </div>
         </div>
       </div>
@@ -183,13 +183,13 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-black text-foreground">
-              Sent to Suyash! 📨
+              Sent to Suyash
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
               Awesome job, {firstName}! Your submission was completed and
               directed to main developer **Suyash Yadav**. Our development team
               is working hard to resolve bugs, review feature ideas, and upload
-              notes!
+              notes.
             </p>
           </div>
 
@@ -283,7 +283,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                       htmlFor="subject_name"
                       className="text-xs font-bold text-muted-foreground uppercase tracking-widest"
                     >
-                      Subject Name 📖
+                      Subject Name
                     </Label>
                     <Input
                       id="subject_name"
@@ -325,7 +325,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
               {/* Error Box display if errorMsg exists */}
               {errorMsg && (
                 <div className="p-3.5 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold leading-relaxed">
-                  ⚠️ {errorMsg}
+                  Error: {errorMsg}
                 </div>
               )}
 
@@ -361,7 +361,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                   <Sparkles className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="text-base font-black text-foreground">
-                  Direct Inbox Routing 📬
+                  Direct Inbox Routing
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                   We have upgraded this suggestion box! Now, everything you send

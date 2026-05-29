@@ -52,12 +52,12 @@ export async function submitFeedbackRequestAction(
 
       const categoryLabel =
         type === "REQUEST"
-          ? "Material Request 📚"
+          ? "Material Request"
           : type === "BUG"
-            ? "Bug Report 🐛"
+            ? "Bug Report"
             : type === "EXPERIENCE"
-              ? "General Feedback 💬"
-              : "Feature Suggestion 💡";
+              ? "General Feedback"
+              : "Feature Suggestion";
 
       const subjectHeader = `[CampusCore ${type}] New Submission from ${studentName}`;
 
