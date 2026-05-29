@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   BookOpen,
@@ -15,7 +15,6 @@ import {
   GraduationCap,
   Calendar,
   Zap,
-  ChevronRight,
   Trophy,
 } from "lucide-react";
 import Link from "next/link";
@@ -46,6 +45,7 @@ const FOCUS_MODES: Record<
     gradient: string;
     accent: string;
     shadow: string;
+    glowingOrb: string;
   }
 > = {
   focus: {
@@ -53,10 +53,11 @@ const FOCUS_MODES: Record<
     emoji: "🚀",
     mantra: "Phone away. Clock is ticking. You are building your future today!",
     gradient:
-      "from-blue-600/10 via-indigo-600/5 to-transparent border-blue-500/20",
+      "from-blue-600/15 via-indigo-600/5 to-transparent border-blue-500/30",
     accent:
       "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
     shadow: "shadow-blue-500/5",
+    glowingOrb: "bg-blue-500/10 shadow-[0_0_50px_20px_rgba(59,130,246,0.15)]",
   },
   grind: {
     label: "PYQ Grind Mode",
@@ -64,10 +65,11 @@ const FOCUS_MODES: Record<
     mantra:
       "Scanning archives. Let's master the exact questions that came in previous exams!",
     gradient:
-      "from-amber-600/10 via-orange-600/5 to-transparent border-amber-500/20",
+      "from-amber-600/15 via-orange-600/5 to-transparent border-amber-500/30",
     accent:
       "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
     shadow: "shadow-amber-500/5",
+    glowingOrb: "bg-amber-500/10 shadow-[0_0_50px_20px_rgba(245,158,11,0.15)]",
   },
   casual: {
     label: "Smart Review Mode",
@@ -75,12 +77,21 @@ const FOCUS_MODES: Record<
     mantra:
       "No pressure. Just browse some notes. Let's get 1% better every single day!",
     gradient:
-      "from-emerald-600/10 via-teal-600/5 to-transparent border-emerald-500/20",
+      "from-emerald-600/15 via-teal-600/5 to-transparent border-emerald-500/30",
     accent:
       "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
     shadow: "shadow-emerald-500/5",
+    glowingOrb:
+      "bg-emerald-500/10 shadow-[0_0_50px_20px_rgba(16,185,129,0.15)]",
   },
 };
+
+interface FlameParticle {
+  id: number;
+  emoji: string;
+  left: number;
+  delay: number;
+}
 
 export function DashboardClient({
   firstName,
@@ -100,6 +111,7 @@ export function DashboardClient({
   const [streak, setStreak] = useState(initialStreak);
   const [claimedStreak, setClaimedStreak] = useState(false);
   const [checkInDone, setCheckInDone] = useState<boolean | null>(null);
+  const [particles, setParticles] = useState<FlameParticle[]>([]);
 
   const mode = FOCUS_MODES[activeMode];
 
@@ -111,7 +123,25 @@ export function DashboardClient({
     setStreak((prev) => prev + 1);
     setClaimedStreak(true);
     toast.success("Streak Boosted! You are on fire 🔥");
+
+    // Spawn 12 colorful dopamine fire/sparkle particles
+    const emojis = ["🔥", "✨", "⚡", "🚀", "💥", "🎓"];
+    const newParticles = Array.from({ length: 12 }).map((_, i) => ({
+      id: Date.now() + i,
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      left: Math.random() * 80 + 10, // Percent left
+      delay: Math.random() * 0.4, // Staggered entry
+    }));
+    setParticles(newParticles);
   }
+
+  // Clear particles after animation completes
+  useEffect(() => {
+    if (particles.length > 0) {
+      const timer = setTimeout(() => setParticles([]), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [particles]);
 
   function handleCheckIn(learned: boolean) {
     setCheckInDone(learned);
@@ -139,9 +169,10 @@ export function DashboardClient({
         bg: "bg-blue-500/10",
         text: "text-blue-600 dark:text-blue-400",
         border: "border-blue-500/20",
-        hoverBorder: "hover:border-blue-500/40 hover:shadow-blue-500/5",
+        hoverBorder:
+          "hover:border-blue-500/40 hover:shadow-blue-500/10 hover:shadow-lg",
         gradient:
-          "from-blue-50/50 to-blue-100/10 dark:from-blue-950/20 dark:to-blue-900/5",
+          "from-blue-50/60 to-blue-100/10 dark:from-blue-950/20 dark:to-blue-900/5",
       },
     },
     {
@@ -156,9 +187,10 @@ export function DashboardClient({
         bg: "bg-amber-500/10",
         text: "text-amber-600 dark:text-amber-400",
         border: "border-amber-500/20",
-        hoverBorder: "hover:border-amber-500/40 hover:shadow-amber-500/5",
+        hoverBorder:
+          "hover:border-amber-500/40 hover:shadow-amber-500/10 hover:shadow-lg",
         gradient:
-          "from-amber-50/50 to-amber-100/10 dark:from-amber-950/20 dark:to-amber-900/5",
+          "from-amber-50/60 to-amber-100/10 dark:from-amber-950/20 dark:to-amber-900/5",
       },
     },
     {
@@ -173,9 +205,10 @@ export function DashboardClient({
         bg: "bg-emerald-500/10",
         text: "text-emerald-600 dark:text-emerald-400",
         border: "border-emerald-500/20",
-        hoverBorder: "hover:border-emerald-500/40 hover:shadow-emerald-500/5",
+        hoverBorder:
+          "hover:border-emerald-500/40 hover:shadow-emerald-500/10 hover:shadow-lg",
         gradient:
-          "from-emerald-50/50 to-emerald-100/10 dark:from-emerald-950/20 dark:to-emerald-900/5",
+          "from-emerald-50/60 to-emerald-100/10 dark:from-emerald-950/20 dark:to-emerald-900/5",
       },
     },
     {
@@ -191,22 +224,59 @@ export function DashboardClient({
         bg: "bg-purple-500/10",
         text: "text-purple-600 dark:text-purple-400",
         border: "border-purple-500/20",
-        hoverBorder: "hover:border-purple-500/40 hover:shadow-purple-500/5",
+        hoverBorder:
+          "hover:border-purple-500/40 hover:shadow-purple-500/10 hover:shadow-lg",
         gradient:
-          "from-purple-50/50 to-purple-100/10 dark:from-purple-950/20 dark:to-purple-900/5",
+          "from-purple-50/60 to-purple-100/10 dark:from-purple-950/20 dark:to-purple-900/5",
       },
     },
   ];
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 pb-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* 🌟 Super Unique Custom Glassmorphism Header with Interactive Mode Selection */}
+      {/* 🧪 Creative Design Spell Animations Injection Block */}
+      <style>{`
+        @keyframes float-slower {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-15px) scale(1.05); }
+        }
+        @keyframes float-faster {
+          0%, 100% { transform: translateY(0px) scale(1.05); }
+          50% { transform: translateY(-10px) scale(1); }
+        }
+        @keyframes glow-pulse {
+          0%, 100% { filter: drop-shadow(0 0 15px rgba(245,158,11,0.3)); }
+          50% { filter: drop-shadow(0 0 25px rgba(245,158,11,0.6)); }
+        }
+        @keyframes particle-float-up {
+          0% { transform: translateY(15px) scale(0.5); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 0.8; }
+          100% { transform: translateY(-70px) scale(1.2); opacity: 0; }
+        }
+        .animate-float-slower {
+          animation: float-slower 9s ease-in-out infinite;
+        }
+        .animate-float-faster {
+          animation: float-faster 7s ease-in-out infinite;
+        }
+        .animate-glow-pulse {
+          animation: glow-pulse 3s ease-in-out infinite;
+        }
+        .animate-particle {
+          animation: particle-float-up 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+      `}</style>
+
+      {/* 🌟 Redesigned Header: Glassmorphism layout with floating glass orbs */}
       <section
-        className={`relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-8 shadow-sm transition-all duration-500 ${mode.gradient}`}
+        className={`relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-8 shadow-sm transition-all duration-700 ${mode.gradient}`}
       >
-        {/* Glow Spheres */}
-        <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
-        <div className="absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
+        {/* Soft Glowing Orbs (Floating & pulsating dynamically based on focus mode) */}
+        <div
+          className={`absolute -right-20 -top-20 w-80 h-80 rounded-full transition-all duration-700 pointer-events-none blur-3xl animate-float-slower ${mode.glowingOrb}`}
+        />
+        <div className="absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none animate-float-faster" />
 
         <div className="relative z-10 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -220,7 +290,7 @@ export function DashboardClient({
             </div>
 
             {/* Interactive Mode Picker Selector */}
-            <div className="flex flex-wrap items-center gap-1.5 bg-muted/80 p-1 rounded-2xl border border-border/80">
+            <div className="flex flex-wrap items-center gap-1.5 bg-muted/80 p-1 rounded-2xl border border-border/80 relative z-20">
               {(Object.keys(FOCUS_MODES) as FocusMode[]).map((key) => {
                 const isSelected = activeMode === key;
                 return (
@@ -229,12 +299,12 @@ export function DashboardClient({
                     onClick={() => {
                       setActiveMode(key);
                       toast.success(
-                        `Activated ${FOCUS_MODES[key].label}! ${FOCUS_MODES[key].emoji}`
+                        `Mode changed to: ${FOCUS_MODES[key].label}! ${FOCUS_MODES[key].emoji}`
                       );
                     }}
-                    className={`text-xs px-3 py-1.5 rounded-xl font-bold transition-all duration-300 flex items-center gap-1 ${
+                    className={`text-xs px-3 py-1.5 rounded-xl font-bold transition-all duration-300 flex items-center gap-1.5 ${
                       isSelected
-                        ? "bg-card text-foreground shadow-xs scale-[1.03]"
+                        ? "bg-card text-foreground shadow-sm scale-[1.03]"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -260,9 +330,9 @@ export function DashboardClient({
               <span className="text-xl shrink-0 mt-0.5">{mode.emoji}</span>
               <div className="space-y-1">
                 <p className="text-xs font-mono font-bold uppercase tracking-wider opacity-70">
-                  Active Learning Goal
+                  Focus Goal
                 </p>
-                <p className="text-xs sm:text-sm font-semibold leading-relaxed">
+                <p className="text-xs sm:text-sm font-bold leading-relaxed">
                   {mode.mantra}
                 </p>
               </div>
@@ -279,7 +349,22 @@ export function DashboardClient({
       {/* 📊 Dopamine-Driven Interactive Streaks & Notices Widgets */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Streak Boost Widget */}
-        <div className="bg-card border border-border hover:border-border/80 rounded-2xl p-6 flex flex-col justify-between space-y-5 transition-all duration-300 hover:shadow-md">
+        <div className="bg-card border border-border hover:border-border/80 rounded-2xl p-6 flex flex-col justify-between space-y-5 transition-all duration-300 hover:shadow-md relative overflow-hidden">
+          {/* Confetti Particle Sparkles render block */}
+          {particles.map((p) => (
+            <span
+              key={p.id}
+              className="absolute text-xl pointer-events-none select-none animate-particle"
+              style={{
+                left: `${p.left}%`,
+                bottom: "40px",
+                animationDelay: `${p.delay}s`,
+              }}
+            >
+              {p.emoji}
+            </span>
+          ))}
+
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <span className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">
@@ -292,7 +377,7 @@ export function DashboardClient({
             <div
               className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-500 ${
                 claimedStreak
-                  ? "bg-red-500/20 text-red-500 scale-110"
+                  ? "bg-red-500/20 text-red-500 scale-120 animate-glow-pulse"
                   : "bg-amber-500/10 text-amber-500"
               }`}
             >
@@ -310,8 +395,8 @@ export function DashboardClient({
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {claimedStreak
-                ? "Daily login checked in! Keep the flame burning bright tomorrow!"
-                : "You haven't claimed your daily learning check-in yet. Click the booster below!"}
+                ? "Daily streak claimed! Keep the flame burning bright tomorrow!"
+                : "You haven't checked in today. Click below to claim your study streak boost!"}
             </p>
           </div>
 
@@ -327,7 +412,7 @@ export function DashboardClient({
             <Zap
               className={`w-3.5 h-3.5 ${claimedStreak ? "" : "animate-bounce"}`}
             />
-            {claimedStreak ? "Checked In For Today!" : "Claim Daily Boost! 🔥"}
+            {claimedStreak ? "Streak Boosted!" : "Claim Daily Boost! 🔥"}
           </button>
         </div>
 
@@ -374,8 +459,8 @@ export function DashboardClient({
         <section className="space-y-4">
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <h2 className="text-xs font-bold font-mono tracking-widest uppercase text-muted-foreground flex items-center gap-1.5">
-              <Bell className="w-3.5 h-3.5 text-amber-500 animate-swing" />{" "}
-              Important Updates
+              <Bell className="w-3.5 h-3.5 text-amber-500" /> Pinned
+              Announcements
             </h2>
             <Link
               href="/announcements"
@@ -434,18 +519,18 @@ export function DashboardClient({
             <Link
               key={card.title}
               href={card.href}
-              className={`group relative overflow-hidden bg-card border border-border rounded-2xl p-6 sm:p-8 flex flex-col justify-between space-y-6 hover:shadow-lg transition-all duration-300 ${card.hue.hoverBorder}`}
+              className={`group relative overflow-hidden bg-card border border-border rounded-2xl p-6 sm:p-8 flex flex-col justify-between space-y-6 hover:shadow-md transition-all duration-300 ${card.hue.hoverBorder}`}
             >
               {/* Background gradient block for custom card premium depth */}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${card.hue.gradient} opacity-40 pointer-events-none`}
+                className={`absolute inset-0 bg-gradient-to-br ${card.hue.gradient} opacity-45 pointer-events-none`}
               />
 
               <div className="relative z-10 flex items-start justify-between gap-4">
                 <div
                   className={`flex h-11 w-11 items-center justify-center rounded-xl ${card.hue.bg} ${card.hue.text} border ${card.hue.border} transition-colors duration-300 shrink-0`}
                 >
-                  <card.icon className="h-5 w-5" />
+                  <card.icon className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 </div>
                 <span
                   className={`text-[10px] font-bold font-mono tracking-wider uppercase border ${card.hue.border} ${card.hue.bg} ${card.hue.text} px-2.5 py-0.5 rounded-full`}
@@ -555,7 +640,7 @@ export function DashboardClient({
             </button>
           </div>
         ) : (
-          <div className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20 shrink-0 flex items-center gap-1.5">
+          <div className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20 shrink-0 flex items-center gap-1.5 animate-in zoom-in duration-300">
             <Check className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Check-in registered!</span>
           </div>
