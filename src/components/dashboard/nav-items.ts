@@ -8,6 +8,7 @@ import {
   PlusSquare,
   Users,
   LayoutDashboard,
+  MessageSquare,
 } from "lucide-react";
 
 export interface NavItem {
@@ -48,6 +49,11 @@ export const studentNavItems: NavItem[] = [
     title: "Notifications",
     href: "/announcements",
     icon: Heart,
+  },
+  {
+    title: "Request & Feedback",
+    href: "/request",
+    icon: MessageSquare,
   },
 ];
 
