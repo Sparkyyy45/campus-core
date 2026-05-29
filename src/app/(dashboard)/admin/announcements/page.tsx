@@ -6,17 +6,25 @@ import type { Announcement } from "@/types/database";
 
 export default async function AdminAnnouncementsPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles").select("role").eq("id", user.id).single() as { data: { role: string } | null; error: unknown };
+  const { data: profile } = (await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()) as { data: { role: string } | null; error: unknown };
   if (profile?.role !== "ADMIN") redirect("/dashboard");
 
-  const { data: announcements } = await supabase
+  const { data: announcements } = (await supabase
     .from("announcements")
     .select("*")
-    .order("created_at", { ascending: false }) as { data: Announcement[] | null };
+    .order("is_pinned", { ascending: false })
+    .order("created_at", { ascending: false })) as {
+    data: Announcement[] | null;
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
