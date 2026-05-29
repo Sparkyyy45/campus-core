@@ -4,12 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { 
-  GraduationCap, 
-  LogOut, 
-  Menu,
-  User
-} from "lucide-react";
+import { GraduationCap, LogOut, Menu, User } from "lucide-react";
 import { studentNavItems, adminNavItems } from "./nav-items";
 import { useState } from "react";
 import { logoutAction } from "@/app/auth/actions";
@@ -23,17 +18,18 @@ interface SidebarProps {
   className?: string;
 }
 
-export function Sidebar({ 
-  role, 
-  unreadAnnouncements = 0, 
+export function Sidebar({
+  role,
+  unreadAnnouncements = 0,
   userName,
-  className 
+  className,
 }: SidebarProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const baseItems = role === "ADMIN" ? adminNavItems : studentNavItems;
-  const displayName = userName || (role === "ADMIN" ? "Administrator" : "Campus Student");
+  const displayName =
+    userName || (role === "ADMIN" ? "Administrator" : "Campus Student");
   const initials = displayName
     .split(" ")
     .map((n) => n[0])
@@ -48,7 +44,7 @@ export function Sidebar({
       href: "/profile",
       icon: User,
       isProfile: true,
-    }
+    },
   ];
 
   return (
@@ -84,8 +80,13 @@ export function Sidebar({
         )}
 
         {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/dashboard" && item.href !== "/admin" && pathname.startsWith(item.href));
-          const showNotificationDot = item.href === "/announcements" && unreadAnnouncements > 0;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== "/dashboard" &&
+              item.href !== "/admin" &&
+              pathname.startsWith(item.href));
+          const showNotificationDot =
+            item.href === "/announcements" && unreadAnnouncements > 0;
 
           return (
             <Link
@@ -93,8 +94,8 @@ export function Sidebar({
               href={item.href}
               className={cn(
                 "group relative flex items-center gap-3 rounded-[4px] px-3 py-2.5 text-xs tracking-wider transition-colors duration-150 select-none cursor-pointer",
-                isActive 
-                  ? "font-medium text-[#37352F] bg-[#F7F7F7] border border-[#EAEAEA]" 
+                isActive
+                  ? "font-medium text-[#37352F] bg-[#F7F7F7] border border-[#EAEAEA]"
                   : "font-normal text-[#787774] hover:text-[#37352F] hover:bg-[#F7F7F7]/50 border border-transparent"
               )}
               title={isCollapsed ? item.title : undefined}
@@ -106,26 +107,28 @@ export function Sidebar({
                   </AvatarFallback>
                 </Avatar>
               ) : (
-                <item.icon 
+                <item.icon
                   className={cn(
-                    "h-4 w-4 shrink-0 transition-colors", 
-                    isActive ? "stroke-[2] text-[#37352F]" : "stroke-[1.5] text-[#787774] group-hover:text-[#37352F]"
-                  )} 
+                    "h-4 w-4 shrink-0 transition-colors",
+                    isActive
+                      ? "stroke-[2] text-[#37352F]"
+                      : "stroke-[1.5] text-[#787774] group-hover:text-[#37352F]"
+                  )}
                 />
               )}
-              
+
               {!isCollapsed && (
-                <span className="flex-1 truncate">
-                  {item.title}
-                </span>
+                <span className="flex-1 truncate">{item.title}</span>
               )}
-              
+
               {/* Minimalist notification square */}
               {showNotificationDot && (
-                <span className={cn(
-                  "flex h-1.5 w-1.5 rounded-none bg-[#37352F] shrink-0",
-                  !isCollapsed && "ml-auto"
-                )} />
+                <span
+                  className={cn(
+                    "flex h-1.5 w-1.5 rounded-none bg-[#37352F] shrink-0",
+                    !isCollapsed && "ml-auto"
+                  )}
+                />
               )}
             </Link>
           );
@@ -160,6 +163,18 @@ export function Sidebar({
           <Menu className="h-4 w-4 shrink-0 stroke-[1.5]" />
           {!isCollapsed && <span className="truncate">Toggle Layout</span>}
         </button>
+
+        {/* Developer Attribution Tag */}
+        {!isCollapsed && (
+          <div className="pt-3 border-t border-[#F1F1F1] mt-2 text-center select-none">
+            <span className="text-[9px] font-mono tracking-widest text-[#787774]/70 uppercase block">
+              Designed & Built by
+            </span>
+            <span className="text-[10px] font-black tracking-wide text-[#37352F] block mt-0.5">
+              Suyash Yadav ⚡
+            </span>
+          </div>
+        )}
       </div>
     </aside>
   );

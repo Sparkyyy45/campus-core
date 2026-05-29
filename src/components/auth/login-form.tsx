@@ -184,6 +184,16 @@ function LoginContent() {
             Create one
           </Link>
         </p>
+
+        {/* Developer Credit Signature */}
+        <div className="mt-8 pt-4 border-t border-border/40 text-center select-none">
+          <p className="text-[10px] font-mono tracking-widest text-muted-foreground/60 uppercase">
+            Designed & Built by
+          </p>
+          <p className="text-xs font-bold text-foreground mt-0.5 tracking-wide">
+            Suyash Yadav ⚡
+          </p>
+        </div>
       </div>
     </div>
   );
