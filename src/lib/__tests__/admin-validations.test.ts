@@ -91,29 +91,29 @@ describe("admin-validations", () => {
       }
     });
 
-    it("should reject invalid Cloudinary URLs", () => {
-      const result = resourceSchema.safeParse({
+    it("should accept any valid URLs (like Google Drive)", () => {
+      const gdriveResult = resourceSchema.safeParse({
         ...validResource,
-        cloudinary_url: "https://malicious-site.com/raw/upload/v123/algo.pdf",
+        cloudinary_url: "https://drive.google.com/file/d/123/view?usp=sharing",
       });
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toContain(
-          "Only res.cloudinary.com links are permitted"
-        );
-      }
+      expect(gdriveResult.success).toBe(true);
+
+      const arbitraryUrlResult = resourceSchema.safeParse({
+        ...validResource,
+        cloudinary_url: "https://example.com/some-document-path",
+      });
+      expect(arbitraryUrlResult.success).toBe(true);
     });
 
-    it("should reject Cloudinary URLs that do not end with .pdf", () => {
+    it("should reject completely invalid URL strings", () => {
       const result = resourceSchema.safeParse({
         ...validResource,
-        cloudinary_url:
-          "https://res.cloudinary.com/dax3ewhm5/raw/upload/v123456/algo.png",
+        cloudinary_url: "not-a-valid-url-string",
       });
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues[0].message).toContain(
-          "Only PDF files are supported"
+          "Document link must be a valid URL"
         );
       }
     });

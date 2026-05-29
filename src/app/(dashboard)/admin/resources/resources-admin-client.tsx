@@ -1,17 +1,8 @@
 "use client";
 
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import {
-  Upload,
-  Trash2,
-  Plus,
-  FileText,
-  Eye,
-  EyeOff,
-  Loader2,
-  X,
-} from "lucide-react";
+import { Upload, Trash2, Plus, Eye, EyeOff, X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,15 +29,6 @@ type ResourceRow = {
 const BRANCHES = ["cs", "it", "ec", "me", "ce", "ee"];
 const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 
-interface UploadState {
-  uploading: boolean;
-  progress: number;
-  fileName: string;
-  publicId: string;
-  url: string;
-  sizeBytes: number;
-}
-
 export function ResourcesAdminClient({
   resources,
   subjects,
@@ -58,10 +40,8 @@ export function ResourcesAdminClient({
 }) {
   const [isPending, startTransition] = useTransition();
   const [showUpload, setShowUpload] = useState(false);
-  const [uploadState, setUploadState] = useState<UploadState | null>(null);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredSubjects = subjects.filter(
     (s) =>
@@ -69,88 +49,13 @@ export function ResourcesAdminClient({
       (!selectedSemester || s.semester === Number(selectedSemester))
   );
 
-  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.name.endsWith(".pdf")) {
-      toast.error("Only PDF files are supported.");
-      return;
-    }
-    if (file.size > 50 * 1024 * 1024) {
-      toast.error("File too large. Maximum 50 MB.");
-      return;
-    }
-
-    setUploadState({
-      uploading: true,
-      progress: 0,
-      fileName: file.name,
-      publicId: "",
-      url: "",
-      sizeBytes: file.size,
-    });
-
-    try {
-      // 1. Get signature from our secure API
-      const sigRes = await fetch("/api/admin/upload-signature", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder: "campuscore/resources" }),
-      });
-      if (!sigRes.ok) throw new Error("Failed to get upload signature");
-      const { signature, timestamp, cloud_name, api_key, folder } =
-        await sigRes.json();
-
-      // 2. Upload directly to Cloudinary
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("api_key", api_key);
-      formData.append("timestamp", String(timestamp));
-      formData.append("signature", signature);
-      formData.append("folder", folder);
-      formData.append("resource_type", "raw");
-
-      const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloud_name}/raw/upload`,
-        { method: "POST", body: formData }
-      );
-
-      if (!uploadRes.ok) throw new Error("Upload to Cloudinary failed");
-      const { public_id, secure_url } = await uploadRes.json();
-
-      setUploadState({
-        uploading: false,
-        progress: 100,
-        fileName: file.name,
-        publicId: public_id,
-        url: secure_url,
-        sizeBytes: file.size,
-      });
-
-      toast.success("File uploaded. Fill in details and save.");
-    } catch (err) {
-      toast.error((err as Error).message || "Upload failed.");
-      setUploadState(null);
-    }
-  }
-
   function handleCreate(formData: FormData) {
-    if (!uploadState?.publicId) {
-      toast.error("Please upload a PDF file first.");
-      return;
-    }
-    formData.append("cloudinary_public_id", uploadState.publicId);
-    formData.append("cloudinary_url", uploadState.url);
-    formData.append("file_size_bytes", String(uploadState.sizeBytes));
-
     startTransition(async () => {
       const result = await createResourceAction(formData);
       if (result.error) toast.error(result.error);
       else {
         toast.success(result.success);
         setShowUpload(false);
-        setUploadState(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
       }
     });
   }
@@ -188,7 +93,7 @@ export function ResourcesAdminClient({
           className="gap-2"
         >
           <Plus className="h-4 w-4" />
-          Upload Resource
+          Add Resource Link
         </Button>
       </div>
 
@@ -198,67 +103,17 @@ export function ResourcesAdminClient({
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-sm flex items-center gap-2">
               <Upload className="h-4 w-4 text-primary" />
-              Upload New Resource
+              Add New Resource Link
             </h2>
             <button
               onClick={() => {
                 setShowUpload(false);
-                setUploadState(null);
               }}
               className="text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
-
-          {/* File upload zone */}
-          <div
-            className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {uploadState?.uploading ? (
-              <div className="flex flex-col items-center gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">
-                  Uploading to Cloudinary...
-                </p>
-              </div>
-            ) : uploadState?.publicId ? (
-              <div className="flex flex-col items-center gap-3">
-                <FileText className="h-8 w-8 text-green-500" />
-                <p className="text-sm font-medium">{uploadState.fileName}</p>
-                <p className="text-xs text-muted-foreground">
-                  {(uploadState.sizeBytes / 1024 / 1024).toFixed(2)} MB ·
-                  Uploaded ✓
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setUploadState(null);
-                  }}
-                >
-                  Choose different file
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-3">
-                <Upload className="h-8 w-8 text-muted-foreground/40" />
-                <p className="text-sm font-medium">Click to upload a PDF</p>
-                <p className="text-xs text-muted-foreground">
-                  Max 50 MB · PDF only
-                </p>
-              </div>
-            )}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf"
-            className="hidden"
-            onChange={handleFileSelect}
-          />
 
           {/* Metadata form */}
           <form action={handleCreate} className="space-y-4">
@@ -269,6 +124,18 @@ export function ResourcesAdminClient({
                   id="title"
                   name="title"
                   placeholder="e.g. Data Structures Unit 3 Notes"
+                  required
+                />
+              </div>
+              <div className="sm:col-span-2 space-y-1.5">
+                <Label htmlFor="cloudinary_url">
+                  Google Drive or Document Link *
+                </Label>
+                <Input
+                  id="cloudinary_url"
+                  name="cloudinary_url"
+                  type="url"
+                  placeholder="https://drive.google.com/file/d/.../view?usp=sharing"
                   required
                 />
               </div>
@@ -371,12 +238,8 @@ export function ResourcesAdminClient({
               </div>
             </div>
             <div className="flex gap-3 pt-2">
-              <Button
-                type="submit"
-                disabled={isPending || !uploadState?.publicId}
-                className="gap-2"
-              >
-                <Upload className="h-4 w-4" />
+              <Button type="submit" disabled={isPending} className="gap-2">
+                <Plus className="h-4 w-4" />
                 {isPending ? "Saving..." : "Save Resource"}
               </Button>
               <Button
@@ -384,7 +247,6 @@ export function ResourcesAdminClient({
                 variant="outline"
                 onClick={() => {
                   setShowUpload(false);
-                  setUploadState(null);
                 }}
               >
                 Cancel

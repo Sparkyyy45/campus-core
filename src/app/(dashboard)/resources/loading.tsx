@@ -37,8 +37,8 @@ export default function ResourcesLoading() {
       {/* Main Grid View Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className="group relative flex flex-col justify-between rounded-2xl bg-card border border-border p-5"
           >
             {/* Subtle top indicator highlight */}
@@ -69,8 +69,7 @@ export default function ResourcesLoading() {
             <div className="mt-5 pt-3 border-t border-border/40 flex items-center justify-between gap-2">
               <Skeleton className="h-4 w-12 bg-muted/30 rounded-md" />
               <div className="flex items-center gap-1.5">
-                <Skeleton className="h-8 w-16 bg-muted/40 rounded-md" />
-                <Skeleton className="h-8 w-16 bg-primary/20 rounded-md" />
+                <Skeleton className="h-8 w-28 bg-primary/20 rounded-md" />
               </div>
             </div>
           </div>

@@ -1,7 +1,6 @@
 // src/app/api/resources/[id]/signed-url/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getSignedUrl } from "@/lib/cloudinary";
 import { rateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
@@ -71,46 +70,40 @@ export async function GET(
   const downloadRequested = searchParams.get("download") === "true";
 
   try {
-    // Generate signed download URL (valid for 1 hour)
-    const expiresAt = Math.floor(Date.now() / 1000) + 3600;
-    const signedUrl = getSignedUrl(
-      resource.cloudinary_public_id,
-      expiresAt,
-      downloadRequested
-    );
+    const documentUrl = resource.cloudinary_url;
 
     if (downloadRequested) {
-      // Only log actual downloads, not inline preview views
-      const { error: logError } = await supabase
+      // Log downloads asynchronously to avoid blocking the redirect response
+      supabase
         .from("resource_downloads")
         .insert({
           user_id: user.id,
           resource_id: id,
-        } as any);
-
-      if (logError) {
-        logger.warn("Failed to log download", {
-          userId: user.id,
-          resourceId: id,
-          error: logError.message,
+        } as any)
+        .then(({ error: logError }) => {
+          if (logError) {
+            logger.warn("Failed to log download", {
+              userId: user.id,
+              resourceId: id,
+              error: logError.message,
+            });
+          }
         });
-      }
 
-      logger.info("Resource download redirected", {
+      logger.info("Resource download redirected to document URL", {
         userId: user.id,
         resourceId: id,
       });
-      return NextResponse.redirect(signedUrl);
+      return NextResponse.redirect(documentUrl);
     }
 
-    // Return the signed URL for inline browser view (application/pdf)
-    // Cache for 45 min — browser will serve from cache on back-navigation
-    logger.info("Resource inline view signed URL generated", {
+    // Return the document URL for inline views
+    logger.info("Resource document URL returned", {
       userId: user.id,
       resourceId: id,
     });
     return NextResponse.json(
-      { url: signedUrl },
+      { url: documentUrl },
       {
         headers: {
           "Cache-Control": "private, max-age=2700",
@@ -118,7 +111,7 @@ export async function GET(
       }
     );
   } catch (error) {
-    logger.error("Cloudinary signed URL error", {
+    logger.error("Signed URL logic error", {
       userId: user?.id,
       resourceId: id,
       error: (error as Error).message,

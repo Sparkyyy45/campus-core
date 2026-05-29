@@ -49,16 +49,10 @@ export const resourceSchema = z.object({
   resource_type_id: z.string().uuid("Invalid resource type ID format."),
   branch_code: branchCodeSchema,
   semester: semesterSchema,
-  cloudinary_public_id: z.string().min(1, "Cloudinary public ID is required."),
+  cloudinary_public_id: z.string().optional(),
   cloudinary_url: z
     .string()
-    .url("Cloudinary URL must be a valid URL.")
-    .refine((url) => url.includes("res.cloudinary.com"), {
-      message: "Only res.cloudinary.com links are permitted.",
-    })
-    .refine((url) => url.toLowerCase().endsWith(".pdf"), {
-      message: "Only PDF files are supported.",
-    }),
+    .url("Document link must be a valid URL (e.g. Google Drive link)."),
   file_size_bytes: z.number().int().nonnegative().nullable().optional(),
   exam_year: z
     .number()

@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import {
   BookOpen,
   FileText,
-  Download,
   Eye,
   Layers,
   Sparkles,
@@ -198,9 +197,8 @@ export default async function ResourcesPage({
           </h1>
 
           <p className="text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
-            Browse high-fidelity instructional handouts, official term
-            assessment papers, and curated study modules synced for Semester{" "}
-            {selectedSemester}.
+            Get your lecture notes, past exam papers, and other study materials
+            for Semester {selectedSemester}.
           </p>
         </div>
 
@@ -284,7 +282,7 @@ export default async function ResourcesPage({
                     {/* Description */}
                     <p className="text-xs text-muted-foreground mt-3 line-clamp-2 leading-relaxed font-medium">
                       {res.description ||
-                        "No specific module synopsis provided by the instructing faculty."}
+                        "No description provided for this file."}
                     </p>
                   </div>
 
@@ -295,17 +293,6 @@ export default async function ResourcesPage({
                     </span>
 
                     <div className="flex items-center gap-1.5">
-                      <Link href={`/resources/${res.id}/view`} prefetch={false}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 px-3 text-xs font-bold hover:bg-primary/10 hover:text-primary transition-colors"
-                        >
-                          <Eye className="w-3.5 h-3.5 mr-1" />
-                          View
-                        </Button>
-                      </Link>
-
                       <a
                         href={`/api/resources/${res.id}/signed-url?download=true`}
                         target="_blank"
@@ -313,10 +300,10 @@ export default async function ResourcesPage({
                       >
                         <Button
                           size="sm"
-                          className="h-8 px-3 text-xs font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xs group-hover:scale-[1.02] transition-transform"
+                          className="h-8 px-4 text-xs font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xs group-hover:scale-[1.02] transition-transform flex items-center gap-1.5"
                         >
-                          <Download className="w-3.5 h-3.5 mr-1" />
-                          Get
+                          <Eye className="w-3.5 h-3.5" />
+                          Open Document
                         </Button>
                       </a>
                     </div>

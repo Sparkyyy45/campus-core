@@ -20,8 +20,15 @@ export async function createResourceAction(
   const resource_type_id = formData.get("resource_type_id") as string;
   const branch_code = (formData.get("branch_code") as string)?.toLowerCase();
   const semester = Number(formData.get("semester"));
-  const cloudinary_public_id = formData.get("cloudinary_public_id") as string;
-  const cloudinary_url = formData.get("cloudinary_url") as string;
+  let cloudinary_public_id = (
+    (formData.get("cloudinary_public_id") as string) || ""
+  )?.trim();
+  if (!cloudinary_public_id) {
+    cloudinary_public_id = `gdrive-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  }
+  const cloudinary_url = (
+    (formData.get("cloudinary_url") as string) || ""
+  )?.trim();
   const file_size_bytes = formData.get("file_size_bytes")
     ? Number(formData.get("file_size_bytes"))
     : null;
@@ -100,14 +107,19 @@ export async function deleteResourceAction(
     return { error: "Resource not found or failed to fetch metadata." };
   }
 
-  // Delete from Cloudinary using DB resolved public ID
-  try {
-    await cloudinary.uploader.destroy(resource.cloudinary_public_id, {
-      resource_type: "raw",
-    });
-  } catch (e) {
-    console.warn("Cloudinary delete warning:", e);
-    // Continue with DB deletion even if Cloudinary fails
+  // Delete from Cloudinary using DB resolved public ID (only if not a Google Drive link)
+  if (
+    resource.cloudinary_public_id &&
+    !resource.cloudinary_public_id.startsWith("gdrive-")
+  ) {
+    try {
+      await cloudinary.uploader.destroy(resource.cloudinary_public_id, {
+        resource_type: "raw",
+      });
+    } catch (e) {
+      console.warn("Cloudinary delete warning:", e);
+      // Continue with DB deletion even if Cloudinary fails
+    }
   }
 
   const { error } = await supabase.from("resources").delete().eq("id", id);
