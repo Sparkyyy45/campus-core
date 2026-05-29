@@ -14,11 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ResourceFilters } from "@/components/dashboard/resource-filters";
-import {
-  getCachedSubjects,
-  getCachedResourceTypes,
-  getCachedResources,
-} from "@/lib/db-cache";
+
+export const dynamic = "force-dynamic";
 
 interface Resource {
   id: string;
@@ -48,17 +45,18 @@ export default async function ResourcesPage({
 
   const db = supabase as any;
 
-  // STAGE 1: Fetch profile and resource types concurrently
-  const [profileResult, resourceTypesRaw] = await Promise.all([
+  // STAGE 1: Fetch profile and active resource types concurrently
+  const [profileResult, resourceTypesResult] = await Promise.all([
     db
       .from("profiles")
       .select("branch_code, semester")
       .eq("id", user.id)
       .single(),
-    getCachedResourceTypes(),
+    db.from("resource_types").select("id, name, is_pyq").eq("is_active", true),
   ]);
 
   const profile = profileResult.data;
+  const resourceTypesRaw = resourceTypesResult.data || [];
 
   const rawSelectedType = sp.type as string | undefined;
   const selectedType = rawSelectedType === "pyqs" ? "pyq" : rawSelectedType;
@@ -77,13 +75,36 @@ export default async function ResourcesPage({
     is_pyq: t.is_pyq,
   }));
 
-  // STAGE 2: Fetch cached resources + subjects concurrently
-  // Resources are cached for 5 min per branch+semester combo — during exam peaks,
-  // 300 students in the same cohort all serve from cache instead of hitting Supabase.
-  const [allResources, subjects] = await Promise.all([
-    getCachedResources(profile?.branch_code || "", selectedSemester),
-    getCachedSubjects(profile?.branch_code || "", selectedSemester),
+  // STAGE 2: Fetch resources + subjects concurrently directly from Supabase
+  const [resourcesResult, subjectsResult] = await Promise.all([
+    db
+      .from("resources")
+      .select(
+        `
+        id, 
+        title, 
+        description, 
+        cloudinary_url, 
+        file_size_bytes,
+        resource_type_id,
+        subject_id,
+        subjects (name),
+        resource_types (name, is_pyq)
+      `
+      )
+      .eq("branch_code", profile?.branch_code || "")
+      .eq("semester", selectedSemester)
+      .eq("status", "PUBLISHED")
+      .order("created_at", { ascending: false }),
+    db
+      .from("subjects")
+      .select("id, name")
+      .eq("branch_code", profile?.branch_code || "")
+      .eq("semester", selectedSemester),
   ]);
+
+  const allResources = resourcesResult.data || [];
+  const subjects = subjectsResult.data || [];
 
   // Apply client-side filters on the cached result set
   let resources = (allResources || []) as unknown as Resource[];
