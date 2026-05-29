@@ -168,10 +168,10 @@ export function Sidebar({
         {!isCollapsed && (
           <div className="pt-3 border-t border-[#F1F1F1] mt-2 text-center select-none">
             <span className="text-[9px] font-mono tracking-widest text-[#787774]/70 uppercase block">
-              Designed & Built by
+              Designed & built by
             </span>
-            <span className="text-[10px] font-black tracking-wide text-[#37352F] block mt-0.5">
-              Suyash Yadav ⚡
+            <span className="text-[10px] font-semibold tracking-wide text-[#37352F] block mt-0.5">
+              Suyash Yadav
             </span>
           </div>
         )}
