@@ -41,7 +41,8 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://res.cloudinary.com; " +
               "connect-src 'self' https://*.supabase.co https://res.cloudinary.com; " +
               "font-src 'self' data:; " +
-              "object-src 'none'; " +
+              "frame-src 'self' https://res.cloudinary.com; " +
+              "object-src 'self' https://res.cloudinary.com; " +
               "frame-ancestors 'none'; " +
               "base-uri 'self'; " +
               "form-action 'self';",
