@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   robots: {
     index: false,
@@ -27,17 +29,18 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const db = supabase as any;
-
-  // Query profile and announcement counts concurrently to avoid sequential waterfall latency
-  const [profileResult, totalAnnResult, readAnnResult] = await Promise.all([
+  // Query profile and announcement lists concurrently to avoid sequential waterfall latency
+  const [profileResult, announcementsResult, readsResult] = await Promise.all([
     supabase
       .from("profiles")
       .select("full_name, role, branch_code")
       .eq("id", user.id)
       .maybeSingle() as any,
-    db.from("announcements").select("*", { count: "exact", head: true }),
-    db.from("announcement_reads").select("*", { count: "exact", head: true }).eq("user_id", user.id)
+    supabase.from("announcements").select("id"),
+    supabase
+      .from("announcement_reads")
+      .select("announcement_id")
+      .eq("user_id", user.id),
   ]);
 
   const { data: profile, error } = profileResult;
@@ -50,17 +53,23 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Compute unread announcement count for students
+  // Compute unread announcement count for students by filtering in memory
   let unreadAnnouncementCount = 0;
   if (profile.role === "STUDENT") {
-    unreadAnnouncementCount = Math.max(0, (totalAnnResult.count ?? 0) - (readAnnResult.count ?? 0));
+    const announcements = announcementsResult.data || [];
+    const reads = new Set(
+      (readsResult.data || []).map((r: any) => r.announcement_id)
+    );
+    unreadAnnouncementCount = announcements.filter(
+      (a: any) => !reads.has(a.id)
+    ).length;
   }
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar - Desktop persistent */}
-      <Sidebar 
-        role={profile.role as "STUDENT" | "ADMIN"} 
+      <Sidebar
+        role={profile.role as "STUDENT" | "ADMIN"}
         unreadAnnouncements={unreadAnnouncementCount}
         userName={profile.full_name || undefined}
         branchCode={profile.branch_code || undefined}
@@ -69,13 +78,13 @@ export default async function DashboardLayout({
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Topbar 
-          userName={profile.full_name || "User"} 
-          role={profile.role} 
+        <Topbar
+          userName={profile.full_name || "User"}
+          role={profile.role}
           branch={profile.branch_code || undefined}
           unreadAnnouncements={unreadAnnouncementCount}
         />
-        
+
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
           {children}
         </main>

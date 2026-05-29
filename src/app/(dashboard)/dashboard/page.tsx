@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const supabase = await createClient();
 
@@ -28,7 +30,7 @@ export default async function DashboardPage() {
   const db = supabase as any;
 
   // STAGE 1: Fetch all dashboard data concurrently in a single batch
-  const [profileResult, pinnedResult, totalAnnResult, readAnnResult] =
+  const [profileResult, pinnedResult, announcementsResult, readsResult] =
     await Promise.all([
       supabase
         .from("profiles")
@@ -41,21 +43,23 @@ export default async function DashboardPage() {
         .eq("is_pinned", true)
         .order("created_at", { ascending: false })
         .limit(3) as any,
-      db.from("announcements").select("*", { count: "exact", head: true }),
-      db
+      supabase.from("announcements").select("id"),
+      supabase
         .from("announcement_reads")
-        .select("*", { count: "exact", head: true })
+        .select("announcement_id")
         .eq("user_id", user.id),
     ]);
 
   const profile = profileResult.data;
   const pinnedAnnouncements = pinnedResult.data;
-  const totalAnn = totalAnnResult.count;
-  const readAnn = readAnnResult.count;
+  const announcements = announcementsResult.data || [];
+  const reads = new Set(
+    (readsResult.data || []).map((r: any) => r.announcement_id)
+  );
 
   const firstName = profile?.full_name?.split(" ")[0] ?? "Student";
 
-  const unreadCount = Math.max(0, (totalAnn ?? 0) - (readAnn ?? 0));
+  const unreadCount = announcements.filter((a: any) => !reads.has(a.id)).length;
 
   // STAGE 2: Fetch roadmap progress concurrently
   let roadmapTotal = 0;

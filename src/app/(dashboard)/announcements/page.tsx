@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { AnnouncementsClient } from "./announcements-client";
 import { getCachedAnnouncements } from "@/lib/db-cache";
 
+export const dynamic = "force-dynamic";
+
 export default async function AnnouncementsPage() {
   const supabase = await createClient();
   const {
