@@ -187,9 +187,9 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
               Awesome job, {firstName}! Your submission was completed and
-              dispatched directly to **suyashydv23@gmail.com**. Our development
-              team is working hard to resolve bugs, review feature ideas, and
-              upload notes!
+              directed to main developer **Suyash Yadav**. Our development team
+              is working hard to resolve bugs, review feature ideas, and upload
+              notes!
             </p>
           </div>
 
@@ -365,8 +365,8 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                   We have upgraded this suggestion box! Now, everything you send
-                  here goes straight to Suyash&apos;s inbox at
-                  **suyashydv23@gmail.com** instantly via live email dispatch.
+                  here goes straight to main developer **Suyash Yadav**
+                  instantly via live email dispatch.
                 </p>
                 <div className="space-y-3 pt-2">
                   <div className="flex items-start gap-2.5">
