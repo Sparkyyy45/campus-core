@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
+import {
+  getCachedUserAndProfile,
+  getCachedAnnouncementsAndReads,
+} from "@/lib/supabase/cached";
 
 export const dynamic = "force-dynamic";
 
@@ -19,46 +23,17 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
+  const { user, profile } = await getCachedUserAndProfile();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  // Query profile and announcement lists concurrently to avoid sequential waterfall latency
-  const [profileResult, announcementsResult, readsResult] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("full_name, role, branch_code")
-      .eq("id", user.id)
-      .maybeSingle() as any,
-    supabase.from("announcements").select("id"),
-    supabase
-      .from("announcement_reads")
-      .select("announcement_id")
-      .eq("user_id", user.id),
-  ]);
-
-  const { data: profile, error } = profileResult;
-
-  if (error || !profile) {
-    // This shouldn't happen if trigger works, but safety first
-    console.error("Layout: Profile not found for user", user.id);
-    // If no profile, we can't determine role, so logout
-    await supabase.auth.signOut();
+  if (!user || !profile) {
     redirect("/login");
   }
 
   // Compute unread announcement count for students by filtering in memory
   let unreadAnnouncementCount = 0;
   if (profile.role === "STUDENT") {
-    const announcements = announcementsResult.data || [];
-    const reads = new Set(
-      (readsResult.data || []).map((r: any) => r.announcement_id)
+    const { announcements, reads } = await getCachedAnnouncementsAndReads(
+      user.id
     );
     unreadAnnouncementCount = announcements.filter(
       (a: any) => !reads.has(a.id)

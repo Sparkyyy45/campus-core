@@ -2,56 +2,31 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardClient } from "./dashboard-client";
+import {
+  getCachedUserAndProfile,
+  getCachedAnnouncementsAndReads,
+} from "@/lib/supabase/cached";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const { user, profile } = await getCachedUserAndProfile();
+
+  if (!user || !profile) redirect("/login");
+
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
   const db = supabase as any;
 
-  // STAGE 1: Fetch all dashboard data concurrently
-  const [profileResult, pinnedResult, announcementsResult, readsResult] =
+  // UNIFIED CONCURRENT EXECUTION: Fetch pinned notices, cached reads, and roadmap status in parallel
+  const [pinnedResult, announcementsAndReads, rmTotalResult, rmDoneResult] =
     await Promise.all([
-      supabase
-        .from("profiles")
-        .select("full_name, branch_code, semester, role")
-        .eq("id", user.id)
-        .single() as any,
       db
         .from("announcements")
         .select("id, title, content")
         .eq("is_pinned", true)
         .order("created_at", { ascending: false })
         .limit(3) as any,
-      supabase.from("announcements").select("id"),
-      supabase
-        .from("announcement_reads")
-        .select("announcement_id")
-        .eq("user_id", user.id),
-    ]);
-
-  const profile = profileResult.data;
-  const pinnedAnnouncements = pinnedResult.data || [];
-  const announcements = announcementsResult.data || [];
-  const reads = new Set(
-    (readsResult.data || []).map((r: any) => r.announcement_id)
-  );
-
-  const firstName = profile?.full_name?.split(" ")[0] ?? "Student";
-  const unreadCount = announcements.filter((a: any) => !reads.has(a.id)).length;
-
-  // STAGE 2: Fetch roadmap progress concurrently
-  let roadmapTotal = 0;
-  let roadmapDone = 0;
-  if (profile) {
-    const [rmTotalResult, rmDoneResult] = await Promise.all([
+      getCachedAnnouncementsAndReads(user.id),
       db
         .from("roadmaps")
         .select("*", { count: "exact", head: true })
@@ -62,12 +37,17 @@ export default async function DashboardPage() {
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id),
     ]);
-    roadmapTotal = rmTotalResult.count ?? 0;
-    roadmapDone = Math.min(rmDoneResult.count ?? 0, roadmapTotal);
-  }
 
+  const pinnedAnnouncements = pinnedResult.data || [];
+  const { announcements, reads } = announcementsAndReads;
+  const unreadCount = announcements.filter((a: any) => !reads.has(a.id)).length;
+
+  const roadmapTotal = rmTotalResult.count ?? 0;
+  const roadmapDone = Math.min(rmDoneResult.count ?? 0, roadmapTotal);
   const roadmapPct =
     roadmapTotal > 0 ? Math.round((roadmapDone / roadmapTotal) * 100) : 0;
+
+  const firstName = profile?.full_name?.split(" ")[0] ?? "Student";
 
   // Time of day greeting
   const hour = new Date().getHours();
@@ -102,7 +82,7 @@ export default async function DashboardPage() {
       semester={profile?.semester ?? 1}
       branchFullName={branchFullName}
       role={profile?.role ?? "STUDENT"}
-      initialStreak={5} // Mock default streak, fully incrementable dynamically on client!
+      initialStreak={5}
       unreadCount={unreadCount}
       pinnedAnnouncements={pinnedAnnouncements}
       roadmapTotal={roadmapTotal}
