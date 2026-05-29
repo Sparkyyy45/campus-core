@@ -148,11 +148,14 @@ export async function submitFeedbackRequestAction(
     });
 
     if (error) {
-      if (
+      const isMissingTable =
         error.code === "42P01" ||
-        error.message?.includes("relation") ||
-        error.message?.includes("exist")
-      ) {
+        error.message?.toLowerCase().includes("relation") ||
+        error.message?.toLowerCase().includes("exist") ||
+        error.message?.toLowerCase().includes("schema cache") ||
+        error.message?.toLowerCase().includes("find the table");
+
+      if (isMissingTable) {
         console.warn(
           "Supabase warning: 'feedback_requests' table does not exist yet. Please execute migration SQL. Falling back to clean log mock."
         );
