@@ -4,16 +4,13 @@ import { useState, useTransition } from "react";
 import {
   Sparkles,
   BookOpen,
-  FileText,
   Send,
   CheckCircle,
   Lightbulb,
   Loader2,
   HelpCircle,
-  ArrowRight,
-  Palette,
-  Calendar,
   MessageSquare,
+  Bug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,9 +20,11 @@ import { toast } from "sonner";
 import { submitFeedbackRequestAction } from "./actions";
 import type { CachedProfile } from "@/lib/supabase/cached";
 
+type FeedbackType = "REQUEST" | "BUG" | "RECOMMENDATION" | "EXPERIENCE";
+
 export function RequestClient({ profile }: { profile: CachedProfile }) {
   const [isPending, startTransition] = useTransition();
-  const [type, setType] = useState<"REQUEST" | "RECOMMENDATION">("REQUEST");
+  const [type, setType] = useState<FeedbackType>("REQUEST");
   const [subjectName, setSubjectName] = useState("");
   const [message, setMessage] = useState("");
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
@@ -33,17 +32,65 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
 
   const firstName = profile.full_name?.split(" ")[0] || "there";
 
-  const handleTemplateClick = (
-    templateType: "REQUEST" | "RECOMMENDATION",
-    subject: string,
-    desc: string
-  ) => {
-    setType(templateType);
-    setSubjectName(subject);
-    setMessage(desc);
-    setErrorMsg("");
-    toast.success("Template filled in! Customize it below ✨");
+  const getCategoryDetails = (category: FeedbackType) => {
+    switch (category) {
+      case "REQUEST":
+        return {
+          title: "Request Study Material",
+          icon: BookOpen,
+          iconColor: "text-blue-500",
+          borderColor: "hover:border-blue-500/40",
+          activeColor: "bg-blue-500/5 border-blue-500/40 text-blue-500",
+          messageLabel:
+            "Explain what notes, slides, or question papers you need 📝",
+          messagePlaceholder:
+            "e.g. I really need Unit 3 and 4 lecture slides from Dr. Smith, or PYQs from 2023 to 2024 for our upcoming sessional exams...",
+          messageHelp: "Explain exactly what unit notes or papers are missing.",
+        };
+      case "BUG":
+        return {
+          title: "Report a Bug",
+          icon: Bug,
+          iconColor: "text-red-500",
+          borderColor: "hover:border-red-500/40",
+          activeColor: "bg-red-500/5 border-red-500/40 text-red-500",
+          messageLabel: "Describe the bug or issue you encountered 🐛",
+          messagePlaceholder:
+            "e.g. When I try to download a PDF file from the Roadmap section on my phone, the button doesn't respond, or the subject selection dropdown is cut off...",
+          messageHelp:
+            "Explain where the issue happened and what went wrong so we can fix it.",
+        };
+      case "RECOMMENDATION":
+        return {
+          title: "Suggest Feature",
+          icon: Lightbulb,
+          iconColor: "text-purple-500",
+          borderColor: "hover:border-purple-500/40",
+          activeColor: "bg-purple-500/5 border-purple-500/40 text-purple-500",
+          messageLabel: "Describe your feature suggestion 💡",
+          messagePlaceholder:
+            "e.g. It would be awesome if we had a dashboard calendar showing our midterms, assignment deadlines, and sessional schedules...",
+          messageHelp:
+            "Share any visual or functional additions you want to see built.",
+        };
+      case "EXPERIENCE":
+        return {
+          title: "Share Experience",
+          icon: MessageSquare,
+          iconColor: "text-emerald-500",
+          borderColor: "hover:border-emerald-500/40",
+          activeColor:
+            "bg-emerald-500/5 border-emerald-500/40 text-emerald-500",
+          messageLabel: "Tell us about your experience using the site 💬",
+          messagePlaceholder:
+            "e.g. The new direct file opening system is so fast! I love how clean the home page looks and the custom dashboard widgets are super handy...",
+          messageHelp:
+            "Share what you like about the site or what we can make more fun.",
+        };
+    }
   };
+
+  const currentCategory = getCategoryDetails(type);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +119,9 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
         toast.error(res.error);
       } else {
         setSubmittedSuccess(true);
-        toast.success(res.success || "Submitted! Thank you so much.");
+        toast.success(
+          res.success || "Submitted! Sent directly to Suyash's inbox 📨"
+        );
       }
     });
   };
@@ -92,7 +141,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
         <div className="space-y-2 relative z-10">
           <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
             <MessageSquare className="w-3.5 h-3.5 text-primary" />
-            <span>Interactive Suggestions Hub</span>
+            <span>Student Hub & Inbox Alert System</span>
             <span>•</span>
             <span className="text-primary font-semibold">
               {profile.branch_code?.toUpperCase()}
@@ -104,16 +153,16 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
           </h1>
 
           <p className="text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
-            Need previous year exam papers, study notes, or want a cool new
-            feature built for the website? Tell us below and we will handle the
-            rest!
+            Need notes, found a bug, want a new feature built, or just want to
+            tell us about your experience? Write it below and it will be sent
+            **directly to Suyash&apos;s email inbox**!
           </p>
         </div>
 
-        {/* Floating Interactive Metric Badge */}
+        {/* Floating Response Status Badge */}
         <div className="relative z-10 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-1.5 bg-muted/50 border border-border/80 px-5 py-4 rounded-2xl shrink-0">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-            Response Status
+            Inbox Alert
           </span>
           <div className="text-sm font-black text-emerald-500 flex items-center gap-1.5 dark:text-emerald-400">
             Active ⚡
@@ -134,12 +183,13 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-black text-foreground">
-              Submitted Successfully!
+              Sent to Suyash! 📨
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-              Awesome job, {firstName}! We received your request. Our developers
-              are review-checking ideas and adding requested material directly
-              to your notes cabinet.
+              Awesome job, {firstName}! Your submission was completed and
+              dispatched directly to **suyashydv23@gmail.com**. Our development
+              team is working hard to resolve bugs, review feature ideas, and
+              upload notes!
             </p>
           </div>
 
@@ -148,9 +198,9 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
               variant="outline"
               size="lg"
               onClick={handleReset}
-              className="rounded-xl px-8 font-bold border-emerald-500/20 hover:bg-emerald-500/5"
+              className="rounded-xl px-8 font-bold border-emerald-500/20 hover:bg-emerald-500/5 cursor-pointer"
             >
-              Request or Recommend Something Else
+              Submit Another Request or Feedback
             </Button>
           </div>
         </div>
@@ -165,43 +215,63 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
               {/* Soft decorative shader */}
               <div className="absolute -left-12 -top-12 w-32 h-32 bg-primary/5 rounded-full blur-xl pointer-events-none" />
 
-              {/* Dynamic segmented button toggle */}
-              <div className="space-y-2">
+              {/* Four-Category Bento-style Button Grid */}
+              <div className="space-y-3">
                 <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  What do you want to do?
+                  What would you like to share?
                 </Label>
-                <div className="grid grid-cols-2 p-1 bg-muted rounded-xl border border-border/60">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setType("REQUEST");
-                      setErrorMsg("");
-                    }}
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs sm:text-sm font-black transition-all cursor-pointer ${
-                      type === "REQUEST"
-                        ? "bg-card text-foreground shadow-sm border border-border/80"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
-                    <span>Request Study Material</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setType("RECOMMENDATION");
-                      setErrorMsg("");
-                    }}
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs sm:text-sm font-black transition-all cursor-pointer ${
-                      type === "RECOMMENDATION"
-                        ? "bg-card text-foreground shadow-sm border border-border/80"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Lightbulb className="w-4 h-4 text-purple-500 shrink-0" />
-                    <span>Recommend Site Feature</span>
-                  </button>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 p-1 bg-muted rounded-2xl border border-border/60">
+                  {(
+                    [
+                      {
+                        val: "REQUEST",
+                        label: "Request Notes",
+                        icon: BookOpen,
+                        color: "text-blue-500",
+                      },
+                      {
+                        val: "BUG",
+                        label: "Report Bug",
+                        icon: Bug,
+                        color: "text-red-500",
+                      },
+                      {
+                        val: "RECOMMENDATION",
+                        label: "Suggest Feature",
+                        icon: Lightbulb,
+                        color: "text-purple-500",
+                      },
+                      {
+                        val: "EXPERIENCE",
+                        label: "Feedback",
+                        icon: MessageSquare,
+                        color: "text-emerald-500",
+                      },
+                    ] as const
+                  ).map((cat) => {
+                    const CatIcon = cat.icon;
+                    const isActive = type === cat.val;
+                    return (
+                      <button
+                        key={cat.val}
+                        type="button"
+                        onClick={() => {
+                          setType(cat.val);
+                          setErrorMsg("");
+                        }}
+                        className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 py-3 px-2 rounded-xl text-xs font-black transition-all cursor-pointer select-none text-center sm:text-left ${
+                          isActive
+                            ? "bg-card text-foreground shadow-sm border border-border/80 scale-[1.02]"
+                            : "text-muted-foreground hover:text-foreground border border-transparent"
+                        }`}
+                      >
+                        <CatIcon
+                          className={`w-4 h-4 shrink-0 ${cat.color} ${isActive ? "scale-110" : ""}`}
+                        />
+                        <span className="truncate">{cat.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -235,17 +305,11 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                     htmlFor="message"
                     className="text-xs font-bold text-muted-foreground uppercase tracking-widest"
                   >
-                    {type === "REQUEST"
-                      ? "Explain what material or PYQ years you need 📝"
-                      : "Describe your feature suggestion 💡"}
+                    {currentCategory.messageLabel}
                   </Label>
                   <Textarea
                     id="message"
-                    placeholder={
-                      type === "REQUEST"
-                        ? "e.g. I really need Dr. Smith's Unit 3 and 4 lecture slides, or PYQs from 2022 to 2024 for our upcoming sessional exams..."
-                        : "e.g. It would be awesome if we had a group study chat room on this site, or calendar alerts for exam dates..."
-                    }
+                    placeholder={currentCategory.messagePlaceholder}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     disabled={isPending}
@@ -253,9 +317,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                     className="rounded-xl px-4 py-3 border-border focus-visible:border-primary/50 text-sm focus-visible:ring-primary/20 leading-relaxed min-h-[120px]"
                   />
                   <p className="text-[11px] text-muted-foreground/80 font-medium">
-                    {type === "REQUEST"
-                      ? "Explain exactly what unit notes or papers are missing."
-                      : "Briefly explain why this addition helps students."}
+                    {currentCategory.messageHelp}
                   </p>
                 </div>
               </div>
@@ -277,12 +339,12 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                   {isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Sending message...</span>
+                      <span>Sending alert to Suyash...</span>
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>Submit Request</span>
+                      <span>Send to Suyash&apos;s Email</span>
                     </>
                   )}
                 </Button>
@@ -299,12 +361,12 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                   <Sparkles className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="text-base font-black text-foreground">
-                  Your Voice Matters!
+                  Direct Inbox Routing 📬
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                  CampusCore is built directly from student feedback! Every
-                  single file uploaded, roadmap designed, and dark themed style
-                  comes directly from your class recommendations.
+                  We have upgraded this suggestion box! Now, everything you send
+                  here goes straight to Suyash&apos;s inbox at
+                  **suyashydv23@gmail.com** instantly via live email dispatch.
                 </p>
                 <div className="space-y-3 pt-2">
                   <div className="flex items-start gap-2.5">
@@ -312,7 +374,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                       ✓
                     </span>
                     <p className="text-[11px] text-muted-foreground font-medium leading-normal">
-                      We check recommendations daily.
+                      Alerts go directly to our lead developer.
                     </p>
                   </div>
                   <div className="flex items-start gap-2.5">
@@ -320,7 +382,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                       ✓
                     </span>
                     <p className="text-[11px] text-muted-foreground font-medium leading-normal">
-                      Materials are uploaded in under 24 hours.
+                      Fast responses and fixes.
                     </p>
                   </div>
                 </div>
@@ -328,130 +390,12 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
 
               <div className="pt-6 border-t border-border/60 text-[10px] text-muted-foreground/60 leading-normal font-mono flex items-center gap-1.5">
                 <HelpCircle className="w-3.5 h-3.5" />
-                <span>Locked & Encrypted submission</span>
+                <span>Instant dispatch alert active</span>
               </div>
             </div>
           </div>
         </div>
       )}
-
-      {/* Quick Interactive Templates Carousel */}
-      <section className="space-y-3">
-        <div className="flex items-center gap-2 px-1">
-          <Palette className="w-4 h-4 text-amber-500 shrink-0 animate-pulse" />
-          <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            💡 Quick Ideas Grid (Tap to instantly fill out)
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Card 1: PYQ Paper */}
-          <div
-            onClick={() =>
-              handleTemplateClick(
-                "REQUEST",
-                "Mathematics-III",
-                "Hi! I need previous 3 years' exam papers (PYQs) for this mathematics course, with simple answers/solutions if possible!"
-              )
-            }
-            className="cursor-pointer border border-border bg-card/60 hover:bg-card hover:border-amber-500/40 hover:shadow-md rounded-2xl p-4 transition-all duration-300 group flex flex-col justify-between min-h-[140px] relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-3 right-3 h-[2px] bg-amber-500/20 group-hover:bg-amber-500/60 transition-colors" />
-            <div>
-              <FileText className="w-5 h-5 text-amber-500 group-hover:-translate-y-0.5 transition-transform shrink-0 mb-2" />
-              <h4 className="text-xs font-bold text-foreground">
-                Get Past Papers
-              </h4>
-              <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-                Need question papers from last year sessional exams? Tap this.
-              </p>
-            </div>
-            <span className="text-[9px] text-amber-500 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-1 mt-3">
-              Use Template <ArrowRight className="w-2.5 h-2.5" />
-            </span>
-          </div>
-
-          {/* Card 2: Lecture Notes */}
-          <div
-            onClick={() =>
-              handleTemplateClick(
-                "REQUEST",
-                "Computer Networks",
-                "Hey! Please upload lecture notes or slide summaries for Unit 3 (IP Addressing) and Unit 4 (Routing Protocols)."
-              )
-            }
-            className="cursor-pointer border border-border bg-card/60 hover:bg-card hover:border-blue-500/40 hover:shadow-md rounded-2xl p-4 transition-all duration-300 group flex flex-col justify-between min-h-[140px] relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-3 right-3 h-[2px] bg-blue-500/20 group-hover:bg-blue-500/60 transition-colors" />
-            <div>
-              <BookOpen className="w-5 h-5 text-blue-500 group-hover:-translate-y-0.5 transition-transform shrink-0 mb-2" />
-              <h4 className="text-xs font-bold text-foreground">
-                Get Class Notes
-              </h4>
-              <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-                Missed a lecture folder or slide stack? Request class notes.
-              </p>
-            </div>
-            <span className="text-[9px] text-blue-500 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-1 mt-3">
-              Use Template <ArrowRight className="w-2.5 h-2.5" />
-            </span>
-          </div>
-
-          {/* Card 3: Pitch Black Theme */}
-          <div
-            onClick={() =>
-              handleTemplateClick(
-                "RECOMMENDATION",
-                "",
-                "I want a super premium pitch-black AMOLED dark mode option so it is extremely easy to read notes in bed at night!"
-              )
-            }
-            className="cursor-pointer border border-border bg-card/60 hover:bg-card hover:border-purple-500/40 hover:shadow-md rounded-2xl p-4 transition-all duration-300 group flex flex-col justify-between min-h-[140px] relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-3 right-3 h-[2px] bg-purple-500/20 group-hover:bg-purple-500/60 transition-colors" />
-            <div>
-              <Palette className="w-5 h-5 text-purple-500 group-hover:-translate-y-0.5 transition-transform shrink-0 mb-2" />
-              <h4 className="text-xs font-bold text-foreground">
-                Suggest Dark Mode
-              </h4>
-              <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-                Want a pitch-black layout for night-time note studying? Tap
-                this.
-              </p>
-            </div>
-            <span className="text-[9px] text-purple-500 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-1 mt-3">
-              Use Template <ArrowRight className="w-2.5 h-2.5" />
-            </span>
-          </div>
-
-          {/* Card 4: Class Planner */}
-          <div
-            onClick={() =>
-              handleTemplateClick(
-                "RECOMMENDATION",
-                "",
-                "Please build a schedule calendar component that alerts us on sessional dates and lab manual submission deadlines!"
-              )
-            }
-            className="cursor-pointer border border-border bg-card/60 hover:bg-card hover:border-emerald-500/40 hover:shadow-md rounded-2xl p-4 transition-all duration-300 group flex flex-col justify-between min-h-[140px] relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-3 right-3 h-[2px] bg-emerald-500/20 group-hover:bg-emerald-500/60 transition-colors" />
-            <div>
-              <Calendar className="w-5 h-5 text-emerald-500 group-hover:-translate-y-0.5 transition-transform shrink-0 mb-2" />
-              <h4 className="text-xs font-bold text-foreground">
-                Suggest Calendar
-              </h4>
-              <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-                Need a dashboard calendar showing midterms and deadlines? Tap
-                this.
-              </p>
-            </div>
-            <span className="text-[9px] text-emerald-500 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-1 mt-3">
-              Use Template <ArrowRight className="w-2.5 h-2.5" />
-            </span>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
