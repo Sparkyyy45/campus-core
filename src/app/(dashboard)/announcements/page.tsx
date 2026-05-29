@@ -37,9 +37,10 @@ export default async function AnnouncementsPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Announcements</h1>
+        <h1 className="text-2xl font-bold tracking-tight">College Notices</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          College updates and important notices.
+          Read important college updates, exam dates, and notices here. Click
+          any notice to see the full details!
         </p>
       </div>
       <AnnouncementsClient announcements={announcements} readIds={readIds} />

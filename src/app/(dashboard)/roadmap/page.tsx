@@ -23,7 +23,7 @@ export default async function RoadmapPage() {
     db
       .from("roadmap_completions")
       .select("roadmap_id")
-      .eq("user_id", user.id) as any
+      .eq("user_id", user.id) as any,
   ]);
 
   const profile = profileResult.data;
@@ -46,10 +46,12 @@ export default async function RoadmapPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Your Roadmap</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Your Study Roadmap
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          {profile.branch_code.toUpperCase()} · Semester {profile.semester} —
-          track your progress through the semester.
+          Semester {profile.semester} · Click on subjects or chapters below to
+          check them off as you study to track your progress!
         </p>
       </div>
       <RoadmapClient
