@@ -203,16 +203,7 @@ export default function PrivacyPolicyPage() {
                 or IT Helpdesk:
               </p>
               <p className="text-sm font-medium text-[#37352F] pt-1">
-                Main Developer: Suyash Yadav (suyashydv23@gmail.com)
-              </p>
-              <p className="text-sm font-medium text-[#37352F] pt-1">
-                Email:{" "}
-                <Link
-                  href="mailto:campuscore@spsu.ac.in"
-                  className="underline hover:text-blue-600"
-                >
-                  campuscore@spsu.ac.in
-                </Link>
+                Main Developer: Suyash Yadav
               </p>
             </section>
           </div>

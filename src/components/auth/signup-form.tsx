@@ -102,12 +102,15 @@ export function SignupForm() {
     <div className="auth-container">
       <div className="auth-card">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-1.5 mb-7">
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-1.5 mb-7 hover:opacity-80 transition-opacity"
+        >
           <span className="text-2xl font-black tracking-tighter text-foreground bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 bg-clip-text text-transparent">
             CampusCore
           </span>
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-        </div>
+        </Link>
 
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground tracking-tight">

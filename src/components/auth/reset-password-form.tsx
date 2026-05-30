@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition, useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GraduationCap, Loader2, Eye, EyeOff } from "lucide-react";
@@ -42,12 +43,15 @@ export function ResetPasswordForm() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="flex items-center justify-center gap-1.5 mb-8">
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-1.5 mb-8 hover:opacity-80 transition-opacity"
+        >
           <span className="text-2xl font-black tracking-tighter text-foreground bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 bg-clip-text text-transparent">
             CampusCore
           </span>
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-        </div>
+        </Link>
 
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground tracking-tight">

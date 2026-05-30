@@ -10,7 +10,7 @@ describe("auth-validations", () => {
   describe("loginSchema", () => {
     it("should pass with a valid email and password", () => {
       const result = loginSchema.safeParse({
-        email: "student@spsu.ac.in",
+        email: "student@university.edu",
         password: "Password123",
       });
       expect(result.success).toBe(true);
@@ -29,7 +29,7 @@ describe("auth-validations", () => {
 
     it("should fail with a short password", () => {
       const result = loginSchema.safeParse({
-        email: "student@spsu.ac.in",
+        email: "student@university.edu",
         password: "short",
       });
       expect(result.success).toBe(false);
@@ -44,7 +44,7 @@ describe("auth-validations", () => {
   describe("signupSchema", () => {
     const validBase = {
       full_name: "Sir Padampat Singhania",
-      email: "singhania@spsu.ac.in",
+      email: "singhania@university.edu",
       password: "Password123",
       confirm_password: "Password123",
       roll_no: "25cs003496",
@@ -96,7 +96,7 @@ describe("auth-validations", () => {
   describe("forgotPasswordSchema", () => {
     it("should validate emails correctly", () => {
       expect(
-        forgotPasswordSchema.safeParse({ email: "test@spsu.ac.in" }).success
+        forgotPasswordSchema.safeParse({ email: "test@university.edu" }).success
       ).toBe(true);
       expect(
         forgotPasswordSchema.safeParse({ email: "invalid-email" }).success

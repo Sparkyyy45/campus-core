@@ -38,7 +38,7 @@ const MOCK_RESOURCES: MockResource[] = [
     subject: "Data Structures & Algorithms (CSE-201)",
     type: "notes",
     sizeMb: "2.4",
-    facultySignature: "Dr. A. K. Sharma",
+    facultySignature: "Professor",
     verificationDate: "April 12, 2026",
     contentSnippet: [
       "CHAPTER 1: Introduction to Time Complexities & Big-O Notation",
@@ -56,7 +56,7 @@ const MOCK_RESOURCES: MockResource[] = [
     subject: "Object-Oriented Programming (CSE-202)",
     type: "pyq",
     sizeMb: "1.1",
-    facultySignature: "Prof. R. Mehta",
+    facultySignature: "Professor",
     verificationDate: "June 05, 2025",
     contentSnippet: [
       "SECTION A: 10 MCQ Questions on Encapsulation and Access Modifiers (10 Marks)",
@@ -73,7 +73,7 @@ const MOCK_RESOURCES: MockResource[] = [
     subject: "Database Management Systems (CSE-203)",
     type: "notes",
     sizeMb: "3.8",
-    facultySignature: "Dr. P. K. Gupta",
+    facultySignature: "Professor",
     verificationDate: "May 19, 2026",
     contentSnippet: [
       "TOPIC 1: Functional Dependencies & Closure Axioms",
@@ -91,7 +91,7 @@ const MOCK_RESOURCES: MockResource[] = [
     subject: "Discrete Mathematics (CSE-204)",
     type: "pyq",
     sizeMb: "0.9",
-    facultySignature: "Prof. S. Sen",
+    facultySignature: "Professor",
     verificationDate: "October 18, 2024",
     contentSnippet: [
       "QUESTION 1: Solve recurrence relation a_n = 5a_{n-1} - 6a_{n-2} with initial conditions (10 Marks)",

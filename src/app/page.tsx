@@ -630,9 +630,8 @@ export default async function LandingPage() {
                   handled directly:
                 </p>
                 <p className="font-semibold text-foreground">
-                  Main Developer: Suyash Yadav (suyashydv23@gmail.com)
+                  Main Developer: Suyash Yadav
                 </p>
-                <p>University Support: campuscore@spsu.ac.in</p>
               </div>
             </details>
           </div>

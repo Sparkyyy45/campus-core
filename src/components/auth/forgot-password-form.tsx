@@ -53,12 +53,15 @@ function ForgotPasswordContent() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="flex items-center justify-center gap-1.5 mb-8">
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-1.5 mb-8 hover:opacity-80 transition-opacity"
+        >
           <span className="text-2xl font-black tracking-tighter text-foreground bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 bg-clip-text text-transparent">
             CampusCore
           </span>
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-        </div>
+        </Link>
 
         {emailSent ? (
           <div className="text-center">
