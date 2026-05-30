@@ -84,13 +84,32 @@ export default async function LandingPage() {
 
       {/* Premium Minimalist Header */}
       <header className="sticky top-0 z-50 w-full bg-background/85 backdrop-blur-lg border-b border-border/30 transition-all duration-300 py-3">
-        <div className="container mx-auto px-6 h-16 flex items-center max-w-7xl">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between max-w-7xl">
           <Link href="/" className="flex items-center gap-2 group">
             <span className="text-2xl md:text-3xl font-black tracking-tighter bg-gradient-to-r from-foreground via-foreground/90 to-foreground/75 bg-clip-text text-transparent group-hover:opacity-85 transition-opacity">
               CampusCore
             </span>
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
           </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/demo">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-xs font-bold h-9 px-4 rounded-xl border border-border/50 hover:bg-muted/50 transition-all duration-200 cursor-pointer text-foreground"
+              >
+                Try Live Demo
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button
+                size="sm"
+                className="text-xs font-bold h-9 px-4 rounded-xl transition-all duration-200 cursor-pointer"
+              >
+                Sign In
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -144,14 +163,23 @@ export default async function LandingPage() {
                 Create Student Account <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
+            <Link href="/demo" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto h-12 px-8 rounded-xl text-base hover:bg-muted/50 border-border/80 transition-all duration-200 font-medium text-foreground cursor-pointer"
+              >
+                Try Live Demo
+              </Button>
+            </Link>
             <Link
               href={user ? "/admin" : "/login?type=admin"}
               className="w-full sm:w-auto"
             >
               <Button
                 size="lg"
-                variant="outline"
-                className="w-full sm:w-auto h-12 px-8 rounded-xl text-base hover:bg-muted/50 border-border/80 transition-all duration-200"
+                variant="ghost"
+                className="w-full sm:w-auto h-12 px-8 rounded-xl text-base hover:bg-muted/50 border border-transparent transition-all duration-200 font-medium text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <ShieldCheck className="mr-2 h-4 w-4 text-primary" /> Admin
                 Portal
