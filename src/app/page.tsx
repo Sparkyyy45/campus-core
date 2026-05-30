@@ -98,7 +98,7 @@ export default async function LandingPage() {
                 variant="ghost"
                 className="text-xs font-bold h-9 px-4 rounded-xl border border-border/50 hover:bg-muted/50 transition-all duration-200 cursor-pointer text-foreground"
               >
-                Try Live Demo
+                View Demo
               </Button>
             </Link>
             <Link href="/login">
@@ -169,20 +169,7 @@ export default async function LandingPage() {
                 variant="outline"
                 className="w-full sm:w-auto h-12 px-8 rounded-xl text-base hover:bg-muted/50 border-border/80 transition-all duration-200 font-medium text-foreground cursor-pointer"
               >
-                Try Live Demo
-              </Button>
-            </Link>
-            <Link
-              href={user ? "/admin" : "/login?type=admin"}
-              className="w-full sm:w-auto"
-            >
-              <Button
-                size="lg"
-                variant="ghost"
-                className="w-full sm:w-auto h-12 px-8 rounded-xl text-base hover:bg-muted/50 border border-transparent transition-all duration-200 font-medium text-muted-foreground hover:text-foreground cursor-pointer"
-              >
-                <ShieldCheck className="mr-2 h-4 w-4 text-primary" /> Admin
-                Portal
+                View Demo
               </Button>
             </Link>
           </div>
@@ -411,13 +398,13 @@ export default async function LandingPage() {
                   Register Student Account
                 </Button>
               </Link>
-              <Link href="/login">
+              <Link href="/demo">
                 <Button
                   size="lg"
                   variant="ghost"
                   className="h-13 px-6 rounded-xl text-base text-muted-foreground hover:text-background hover:bg-white/10 transition-all duration-200"
                 >
-                  Sign in existing
+                  View Demo
                 </Button>
               </Link>
             </div>
@@ -676,10 +663,10 @@ export default async function LandingPage() {
               Register
             </Link>
             <Link
-              href="/admin"
+              href="/demo"
               className="hover:text-foreground transition-colors"
             >
-              Admin Portal
+              View Demo
             </Link>
             <Link
               href="/resources"
