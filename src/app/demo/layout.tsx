@@ -25,6 +25,8 @@ export default function DemoLayout({
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [unreadAnnouncements, setUnreadAnnouncements] = useState(1);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const navItems = [
     {
@@ -60,6 +62,82 @@ export default function DemoLayout({
       isProfile: true,
     },
   ];
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#FBFBFA] flex items-center justify-center p-4 selection:bg-primary/20 font-sans">
+        <div className="w-full max-w-[400px] bg-white border border-[#EAEAEA] rounded-xl p-8 shadow-sm animate-fade-in-up">
+          <div className="flex items-center justify-center gap-1.5 mb-8">
+            <span className="text-2xl font-black tracking-tighter text-[#37352F]">
+              CampusCore
+            </span>
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+          </div>
+
+          <div className="mb-8 text-center">
+            <h1 className="text-xl font-bold text-[#37352F] tracking-tight">
+              Demo Sandbox Access
+            </h1>
+            <p className="mt-2 text-sm text-[#787774]">
+              Sign in to explore the interactive environment. No real user data
+              is required.
+            </p>
+          </div>
+
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-[#787774] uppercase tracking-widest">
+                Email Address
+              </label>
+              <input
+                type="email"
+                disabled
+                value="demo.student@spsu.ac.in"
+                className="w-full px-3 py-2.5 text-sm border border-[#EAEAEA] rounded-lg bg-[#F7F7F7] text-[#37352F] focus:outline-none cursor-not-allowed font-medium"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-[#787774] uppercase tracking-widest">
+                Password
+              </label>
+              <input
+                type="password"
+                disabled
+                value="••••••••••••"
+                className="w-full px-3 py-2.5 text-sm border border-[#EAEAEA] rounded-lg bg-[#F7F7F7] text-[#37352F] focus:outline-none cursor-not-allowed font-medium"
+              />
+            </div>
+
+            <button
+              onClick={() => {
+                setIsLoggingIn(true);
+                setTimeout(() => setIsAuthenticated(true), 1200);
+              }}
+              disabled={isLoggingIn}
+              className="w-full bg-[#37352F] text-white font-medium text-sm py-2.5 rounded-lg mt-6 hover:bg-[#37352F]/90 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-80"
+            >
+              {isLoggingIn ? (
+                <>
+                  <span className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  Authenticating...
+                </>
+              ) : (
+                "Sign In to Demo"
+              )}
+            </button>
+
+            <Link
+              href="/"
+              className="block text-center mt-6 text-xs text-[#787774] hover:text-[#37352F] hover:underline transition-colors"
+            >
+              Return to Landing Page
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-[#FBFBFA] overflow-hidden select-none font-sans antialiased text-[#37352F]">
