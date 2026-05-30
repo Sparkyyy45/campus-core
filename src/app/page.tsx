@@ -92,14 +92,13 @@ export default async function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson) }}
       />
 
-      {/* Premium Minimalist Header */}
-      <header className="sticky top-0 z-50 w-full bg-background/85 backdrop-blur-lg border-b border-border/30 transition-all duration-300 py-3">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between max-w-7xl">
+      {/* Integrated Header */}
+      <header className="absolute top-0 left-0 right-0 w-full z-50 py-8">
+        <div className="container mx-auto px-6 flex items-center justify-between max-w-7xl">
           <Link href="/" className="flex items-center gap-2 group">
             <span className="text-2xl md:text-3xl font-black tracking-tighter bg-gradient-to-r from-foreground via-foreground/90 to-foreground/75 bg-clip-text text-transparent group-hover:opacity-85 transition-opacity">
               CampusCore
             </span>
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/demo">
@@ -187,43 +186,8 @@ export default async function LandingPage() {
             </Link>
           </div>
 
-          {/* Avatar Social Proof */}
-          <div
-            className="mt-14 flex flex-col items-center justify-center gap-4 animate-fade-in-up"
-            style={{ animationDelay: "0.2s" }}
-          >
-            <div className="flex -space-x-3">
-              {[
-                { bg: "bg-blue-100", text: "text-blue-700", letter: "A" },
-                { bg: "bg-emerald-100", text: "text-emerald-700", letter: "R" },
-                { bg: "bg-amber-100", text: "text-amber-700", letter: "P" },
-                { bg: "bg-rose-100", text: "text-rose-700", letter: "K" },
-                { bg: "bg-purple-100", text: "text-purple-700", letter: "S" },
-              ].map((avatar, i) => (
-                <div
-                  key={i}
-                  className={`h-10 w-10 rounded-full border-2 border-background flex items-center justify-center text-xs font-bold ${avatar.bg} ${avatar.text} shadow-sm ring-1 ring-black/5 hover:-translate-y-1 transition-transform duration-200`}
-                >
-                  {avatar.letter}
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <div className="flex gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
-                  />
-                ))}
-              </div>
-              <span>
-                Joined by{" "}
-                <span className="text-foreground font-bold">1,200+</span> SPSU
-                Students
-              </span>
-            </div>
-          </div>
+          {/* Removed Avatar Social Proof as requested */}
+          <div className="mt-14" />
 
           {/* Interactive Live Demonstration App Preview */}
           <InteractivePreview />
