@@ -6,6 +6,7 @@ import {
   getCachedUserAndProfile,
   getCachedAnnouncementsAndReads,
 } from "@/lib/supabase/cached";
+import { getGlobalRoadmaps } from "@/lib/supabase/global-cache";
 
 export default async function DashboardPage() {
   // Use request-level cached user — no extra getUser() round-trip
@@ -17,32 +18,27 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const db = supabase as any;
 
-  // UNIFIED CONCURRENT EXECUTION: Fetch pinned notices, cached reads, and roadmap status in parallel
-  const [pinnedResult, announcementsAndReads, rmTotalResult, rmDoneResult] =
+  // UNIFIED CONCURRENT EXECUTION: Fetch global shared data and user-specific data in parallel
+  const [announcementsAndReads, globalRoadmaps, rmDoneResult] =
     await Promise.all([
-      db
-        .from("announcements")
-        .select("id, title, content")
-        .eq("is_pinned", true)
-        .order("created_at", { ascending: false })
-        .limit(3) as any,
       getCachedAnnouncementsAndReads(user.id),
-      db
-        .from("roadmaps")
-        .select("*", { count: "exact", head: true })
-        .eq("branch_code", profile.branch_code)
-        .eq("semester", profile.semester),
+      getGlobalRoadmaps(profile.branch_code || "", profile.semester || 1),
       db
         .from("roadmap_completions")
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id),
     ]);
 
-  const pinnedAnnouncements = pinnedResult.data || [];
   const { announcements, reads } = announcementsAndReads;
+
+  // Derive pinned announcements in memory from global cache
+  const pinnedAnnouncements = announcements
+    .filter((a: any) => a.is_pinned)
+    .slice(0, 3);
+
   const unreadCount = announcements.filter((a: any) => !reads.has(a.id)).length;
 
-  const roadmapTotal = rmTotalResult.count ?? 0;
+  const roadmapTotal = globalRoadmaps.length;
   const roadmapDone = Math.min(rmDoneResult.count ?? 0, roadmapTotal);
   const roadmapPct =
     roadmapTotal > 0 ? Math.round((roadmapDone / roadmapTotal) * 100) : 0;

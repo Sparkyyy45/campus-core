@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { RoadmapClient } from "./roadmap-client";
 import type { Roadmap } from "@/types/database";
 import { getCachedUserAndProfile } from "@/lib/supabase/cached";
+import { getGlobalRoadmaps } from "@/lib/supabase/global-cache";
 
 export default async function RoadmapPage() {
   // Use request-level cached user — no extra getUser() round-trip
@@ -13,21 +14,14 @@ export default async function RoadmapPage() {
   const supabase = await createClient();
   const db = supabase as any;
 
-  // Fetch roadmap items and completions concurrently
-  const [roadmapsResult, completionsResult] = await Promise.all([
-    db
-      .from("roadmaps")
-      .select("*")
-      .eq("branch_code", profile.branch_code)
-      .eq("semester", profile.semester)
-      .order("order_idx") as { data: Roadmap[] | null },
+  // Fetch roadmap items from global cache and completions concurrently
+  const [roadmaps, completionsResult] = await Promise.all([
+    getGlobalRoadmaps(profile.branch_code || "", profile.semester || 1),
     db
       .from("roadmap_completions")
       .select("roadmap_id")
       .eq("user_id", user.id) as any,
   ]);
-
-  const roadmaps = roadmapsResult.data;
   const completions = completionsResult.data as { roadmap_id: string }[] | null;
 
   const completedIds = new Set(

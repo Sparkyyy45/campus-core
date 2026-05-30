@@ -1,6 +1,11 @@
 // src/app/(dashboard)/resources/page.tsx
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getCachedUserAndProfile } from "@/lib/supabase/cached";
+import {
+  getGlobalResourceTypes,
+  getGlobalResources,
+  getGlobalSubjects,
+} from "@/lib/supabase/global-cache";
 import {
   BookOpen,
   FileText,
@@ -13,7 +18,6 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ResourceFilters } from "@/components/dashboard/resource-filters";
-import { getCachedUserAndProfile } from "@/lib/supabase/cached";
 
 interface Resource {
   id: string;
@@ -38,9 +42,6 @@ export default async function ResourcesPage({
 
   if (!user || !profile) redirect("/login");
 
-  const supabase = await createClient();
-  const db = supabase as any;
-
   const rawSelectedType = sp.type as string | undefined;
   const selectedType = rawSelectedType === "pyqs" ? "pyq" : rawSelectedType;
   const selectedSubject = sp.subject as string | undefined;
@@ -49,54 +50,19 @@ export default async function ResourcesPage({
     ? parseInt(sp.semester as string)
     : profile?.semester || 1;
 
-  // Fetch resource types, resources, and subjects concurrently — single parallel batch
-  const [resourceTypesResult, resourcesResult, subjectsResult] =
-    await Promise.all([
-      db
-        .from("resource_types")
-        .select("id, name, is_pyq")
-        .eq("is_active", true),
-      db
-        .from("resources")
-        .select(
-          `
-        id, 
-        title, 
-        description, 
-        cloudinary_url, 
-        file_size_bytes,
-        resource_type_id,
-        subject_id,
-        subjects (name),
-        resource_types (name, is_pyq)
-      `
-        )
-        .eq("branch_code", profile?.branch_code || "")
-        .eq("semester", selectedSemester)
-        .eq("status", "PUBLISHED")
-        .order("created_at", { ascending: false }),
-      db
-        .from("subjects")
-        .select("id, name")
-        .eq("branch_code", profile?.branch_code || "")
-        .eq("semester", selectedSemester),
-    ]);
+  // Fetch resource types, resources, and subjects from global cache concurrently
+  const [globalResourceTypes, allResources, subjects] = await Promise.all([
+    getGlobalResourceTypes(),
+    getGlobalResources(profile.branch_code || "", selectedSemester),
+    getGlobalSubjects(profile.branch_code || "", selectedSemester),
+  ]);
 
-  const resourceTypes = (
-    (resourceTypesResult.data || []) as {
-      id: string;
-      name: string;
-      is_pyq: boolean;
-    }[]
-  ).map((t) => ({
+  const resourceTypes = (globalResourceTypes as any[]).map((t) => ({
     id: t.id,
     name: t.name,
     slug: t.name.toLowerCase(),
     is_pyq: t.is_pyq,
   }));
-
-  const allResources = resourcesResult.data || [];
-  const subjects = subjectsResult.data || [];
 
   // Apply client-side filters on the cached result set
   let resources = (allResources || []) as unknown as Resource[];

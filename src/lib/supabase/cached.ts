@@ -1,6 +1,7 @@
 // src/lib/supabase/cached.ts
 import { cache } from "react";
 import { createClient } from "./server";
+import { getGlobalAnnouncements } from "./global-cache";
 
 export type CachedProfile = {
   full_name: string | null;
@@ -38,20 +39,19 @@ export const getCachedUserAndProfile = cache(async () => {
 });
 
 /**
- * Request-level cached retrieval of announcements and announcement read lists.
- * Memoizes duplicate notice loads between layouts and child screens within the same request.
+ * Request-level cached retrieval of announcement read lists.
+ * Fetches announcements from the global cache and memoizes duplicate read lists within the same request.
  */
 export const getCachedAnnouncementsAndReads = cache(async (userId: string) => {
   const supabase = await createClient();
-  const [announcementsRes, readsRes] = await Promise.all([
-    supabase.from("announcements").select("id"),
+  const [announcements, readsRes] = await Promise.all([
+    getGlobalAnnouncements(),
     supabase
       .from("announcement_reads")
       .select("announcement_id")
       .eq("user_id", userId),
   ]);
 
-  const announcements = announcementsRes.data || [];
   const reads = new Set(
     (readsRes.data || []).map((r: any) => r.announcement_id)
   );
