@@ -181,8 +181,8 @@ export function SignupForm() {
             )}
           </div>
 
-          {/* Branch + Year — side by side */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Branch + Year — side by side on sm+ screens */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="branch_code">Branch</Label>
               <Select

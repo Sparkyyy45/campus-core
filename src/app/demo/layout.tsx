@@ -16,6 +16,13 @@ import {
   User,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export default function DemoLayout({
   children,
@@ -139,112 +146,107 @@ export default function DemoLayout({
     );
   }
 
-  return (
-    <div className="flex h-screen bg-[#FBFBFA] overflow-hidden select-none font-sans antialiased text-[#37352F]">
-      {/* Sidebar Sandbox */}
-      <aside
-        className={cn(
-          "relative flex flex-col bg-white border-r border-[#EAEAEA] transition-all duration-300 select-none z-30 shrink-0",
-          isCollapsed ? "w-[76px]" : "w-[250px]"
-        )}
-      >
-        {/* Brand Header */}
-        <div className="flex h-20 items-center px-6 border-b border-[#EAEAEA]">
-          <Link href="/" className="flex items-center gap-1 w-full px-2">
-            {!isCollapsed ? (
-              <>
-                <span className="text-lg font-black tracking-tighter text-[#37352F]">
-                  CampusCore
-                </span>
-                <span className="h-1 w-1 rounded-full bg-primary" />
-              </>
-            ) : (
-              <span className="text-base font-black tracking-tighter text-[#37352F]">
-                CC
+  const renderSidebarContent = (isMobile = false) => (
+    <div className="flex flex-col h-full bg-white">
+      {/* Brand Header */}
+      <div className="flex h-20 items-center px-6 border-b border-[#EAEAEA]">
+        <Link href="/" className="flex items-center gap-1 w-full px-2">
+          {!isCollapsed || isMobile ? (
+            <>
+              <span className="text-lg font-black tracking-tighter text-[#37352F]">
+                CampusCore
               </span>
-            )}
-          </Link>
-        </div>
-
-        {/* Directory Navigation */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1.5">
-          {!isCollapsed && (
-            <div className="px-3 pb-2">
-              <span className="text-[9px] font-mono tracking-widest uppercase text-[#787774]">
-                Sandbox Directory
-              </span>
-            </div>
+              <span className="h-1 w-1 rounded-full bg-primary" />
+            </>
+          ) : (
+            <span className="text-base font-black tracking-tighter text-[#37352F]">
+              CC
+            </span>
           )}
+        </Link>
+      </div>
 
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            const showNotificationDot =
-              item.showBadge && unreadAnnouncements > 0;
+      {/* Directory Navigation */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1.5">
+        {(!isCollapsed || isMobile) && (
+          <div className="px-3 pb-2">
+            <span className="text-[9px] font-mono tracking-widest uppercase text-[#787774]">
+              Sandbox Directory
+            </span>
+          </div>
+        )}
 
-            return (
-              <Link
-                key={item.title}
-                href={item.href}
-                className={cn(
-                  "group relative flex items-center gap-3 rounded-[4px] px-3 py-2.5 text-xs tracking-wider transition-colors duration-150 select-none cursor-pointer",
-                  isActive
-                    ? "font-medium text-[#37352F] bg-[#F7F7F7] border border-[#EAEAEA]"
-                    : "font-normal text-[#787774] hover:text-[#37352F] hover:bg-[#F7F7F7]/50 border border-transparent"
-                )}
-                title={isCollapsed ? item.title : undefined}
-                onClick={
-                  item.showBadge ? () => setUnreadAnnouncements(0) : undefined
-                }
-              >
-                {item.isProfile ? (
-                  <Avatar className="h-4 w-4 rounded-[4px] border border-[#EAEAEA] shrink-0">
-                    <AvatarFallback className="bg-white text-[#37352F] font-mono text-[8px] rounded-[4px]">
-                      DS
-                    </AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <item.icon
-                    className={cn(
-                      "h-4 w-4 shrink-0 transition-colors",
-                      isActive
-                        ? "stroke-[2] text-[#37352F]"
-                        : "stroke-[1.5] text-[#787774] group-hover:text-[#37352F]"
-                    )}
-                  />
-                )}
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          const showNotificationDot = item.showBadge && unreadAnnouncements > 0;
 
-                {!isCollapsed && (
-                  <span className="flex-1 truncate">{item.title}</span>
-                )}
-
-                {showNotificationDot && (
-                  <span
-                    className={cn(
-                      "flex h-1.5 w-1.5 rounded-none bg-[#37352F] shrink-0",
-                      !isCollapsed && "ml-auto"
-                    )}
-                  />
-                )}
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Action Footer */}
-        <div className="p-4 border-t border-[#EAEAEA] bg-white space-y-1">
-          <Link href="/">
-            <button
+          return (
+            <Link
+              key={item.title}
+              href={item.href}
               className={cn(
-                "flex items-center gap-3 w-full rounded-[4px] px-3 py-2.5 text-xs font-normal tracking-wider text-[#787774] hover:text-[#37352F] hover:bg-[#F7F7F7]/50 transition-colors duration-150 cursor-pointer border border-transparent mb-1",
-                isCollapsed && "justify-center px-0"
+                "group relative flex items-center gap-3 rounded-[4px] px-3 py-2.5 text-xs tracking-wider transition-colors duration-150 select-none cursor-pointer",
+                isActive
+                  ? "font-medium text-[#37352F] bg-[#F7F7F7] border border-[#EAEAEA]"
+                  : "font-normal text-[#787774] hover:text-[#37352F] hover:bg-[#F7F7F7]/50 border border-transparent"
               )}
-              title="Exit Sandbox"
+              title={isCollapsed && !isMobile ? item.title : undefined}
+              onClick={
+                item.showBadge ? () => setUnreadAnnouncements(0) : undefined
+              }
             >
-              <LogOut className="h-4 w-4 shrink-0 stroke-[1.5]" />
-              {!isCollapsed && <span className="truncate">Exit Sandbox</span>}
-            </button>
-          </Link>
+              {item.isProfile ? (
+                <Avatar className="h-4 w-4 rounded-[4px] border border-[#EAEAEA] shrink-0">
+                  <AvatarFallback className="bg-white text-[#37352F] font-mono text-[8px] rounded-[4px]">
+                    DS
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <item.icon
+                  className={cn(
+                    "h-4 w-4 shrink-0 transition-colors",
+                    isActive
+                      ? "stroke-[2] text-[#37352F]"
+                      : "stroke-[1.5] text-[#787774] group-hover:text-[#37352F]"
+                  )}
+                />
+              )}
 
+              {(!isCollapsed || isMobile) && (
+                <span className="flex-1 truncate">{item.title}</span>
+              )}
+
+              {showNotificationDot && (
+                <span
+                  className={cn(
+                    "flex h-1.5 w-1.5 rounded-none bg-[#37352F] shrink-0",
+                    (!isCollapsed || isMobile) && "ml-auto"
+                  )}
+                />
+              )}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Action Footer */}
+      <div className="p-4 border-t border-[#EAEAEA] bg-white space-y-1 mt-auto">
+        <Link href="/">
+          <button
+            className={cn(
+              "flex items-center gap-3 w-full rounded-[4px] px-3 py-2.5 text-xs font-normal tracking-wider text-[#787774] hover:text-[#37352F] hover:bg-[#F7F7F7]/50 transition-colors duration-150 cursor-pointer border border-transparent mb-1",
+              isCollapsed && !isMobile && "justify-center px-0"
+            )}
+            title="Exit Sandbox"
+          >
+            <LogOut className="h-4 w-4 shrink-0 stroke-[1.5]" />
+            {(!isCollapsed || isMobile) && (
+              <span className="truncate">Exit Sandbox</span>
+            )}
+          </button>
+        </Link>
+
+        {!isMobile && (
           <button
             type="button"
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -257,23 +259,62 @@ export default function DemoLayout({
             <Menu className="h-4 w-4 shrink-0 stroke-[1.5]" />
             {!isCollapsed && <span className="truncate">Toggle Layout</span>}
           </button>
-        </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex h-screen bg-[#FBFBFA] overflow-hidden select-none font-sans antialiased text-[#37352F]">
+      {/* Sidebar Sandbox */}
+      <aside
+        className={cn(
+          "relative hidden lg:flex flex-col bg-white border-r border-[#EAEAEA] transition-all duration-300 select-none z-30 shrink-0",
+          isCollapsed ? "w-[76px]" : "w-[250px]"
+        )}
+      >
+        {renderSidebarContent()}
       </aside>
 
       {/* Main Sandbox Contents Viewport */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Sticky Demo Sandbox Header Banner */}
-        <div className="bg-[#37352F] text-[#F7F7F7] px-6 py-2.5 flex items-center justify-between text-xs tracking-wider font-mono border-b border-[#EAEAEA] shadow-md z-20 relative shrink-0">
+        <div className="bg-[#37352F] text-[#F7F7F7] px-4 sm:px-6 py-2.5 flex items-center justify-between text-xs tracking-wider font-mono border-b border-[#EAEAEA] shadow-md z-20 relative shrink-0">
           <div className="flex items-center gap-2 truncate">
+            {/* Mobile Sidebar Toggle */}
+            <Sheet>
+              <SheetTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="lg:hidden h-7 w-7 text-white hover:text-white hover:bg-white/10 shrink-0 rounded-[4px] -ml-2 mr-1"
+                  />
+                }
+              >
+                <Menu className="h-4 w-4 stroke-[1.5]" />
+              </SheetTrigger>
+              <SheetContent
+                side="left"
+                className="p-0 w-64 bg-white border-r border-[#EAEAEA] [&>button]:hidden"
+              >
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                {renderSidebarContent(true)}
+              </SheetContent>
+            </Sheet>
+
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
             <span className="truncate">
-              Demo Sandbox Mode — Exploring Sir Padampat Singhania University
-              Student Portal
+              Demo Sandbox
+              <span className="hidden sm:inline">
+                {" "}
+                — Exploring Sir Padampat Singhania University Portal
+              </span>
             </span>
           </div>
-          <Link href="/signup" className="shrink-0 ml-4">
-            <button className="bg-white text-[#37352F] font-bold px-3 py-1.5 rounded-[4px] border border-[#EAEAEA] hover:bg-[#F7F7F7] transition-all text-[9px] uppercase font-sans tracking-wider cursor-pointer">
-              Create Free Account
+          <Link href="/signup" className="shrink-0 ml-2 sm:ml-4">
+            <button className="bg-white text-[#37352F] font-bold px-2.5 py-1.5 rounded-[4px] border border-[#EAEAEA] hover:bg-[#F7F7F7] transition-all text-[9px] uppercase font-sans tracking-wider cursor-pointer whitespace-nowrap">
+              Create <span className="hidden sm:inline">Free Account</span>
             </button>
           </Link>
         </div>
