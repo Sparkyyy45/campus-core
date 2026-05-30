@@ -16,9 +16,6 @@ import {
 } from "lucide-react";
 
 export function InteractivePreview() {
-  const [isPreviewAuth, setIsPreviewAuth] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-
   const [activeTab, setActiveTab] = useState<
     "resources" | "roadmaps" | "announcements" | "admin"
   >("resources");
@@ -135,71 +132,7 @@ export function InteractivePreview() {
         </div>
 
         {/* Workspace App Layout */}
-        <div className="flex-1 flex flex-col md:flex-row bg-background overflow-hidden relative">
-          {!isPreviewAuth ? (
-            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#FBFBFA] p-6 animate-fade-in-up">
-              <div className="w-full max-w-[340px] bg-white border border-[#EAEAEA] rounded-xl p-8 shadow-sm">
-                <div className="flex items-center justify-center gap-1.5 mb-6">
-                  <span className="text-xl font-black tracking-tighter text-[#37352F]">
-                    CampusCore
-                  </span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                </div>
-                <div className="text-center mb-6">
-                  <h3 className="text-[15px] font-bold text-[#37352F] tracking-tight">
-                    Demo Sandbox Access
-                  </h3>
-                  <p className="text-xs text-[#787774] mt-1.5">
-                    Sign in to interact with the simulated workspace.
-                  </p>
-                </div>
-
-                <div className="space-y-4 mb-6">
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-bold text-[#787774] uppercase tracking-widest">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      disabled
-                      value="demo.student@spsu.ac.in"
-                      className="w-full px-3 py-2.5 text-xs border border-[#EAEAEA] rounded-lg bg-[#F7F7F7] text-[#37352F] font-medium focus:outline-none cursor-not-allowed"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-bold text-[#787774] uppercase tracking-widest">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      disabled
-                      value="••••••••••••"
-                      className="w-full px-3 py-2.5 text-xs border border-[#EAEAEA] rounded-lg bg-[#F7F7F7] text-[#37352F] font-medium focus:outline-none cursor-not-allowed"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    setIsLoggingIn(true);
-                    setTimeout(() => setIsPreviewAuth(true), 1200);
-                  }}
-                  disabled={isLoggingIn}
-                  className="w-full bg-[#37352F] text-white font-medium text-xs py-3 rounded-lg hover:bg-[#37352F]/90 transition-all flex justify-center items-center gap-2 cursor-pointer disabled:opacity-80"
-                >
-                  {isLoggingIn ? (
-                    <>
-                      <span className="h-3.5 w-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      Authenticating...
-                    </>
-                  ) : (
-                    "Sign In to Demo"
-                  )}
-                </button>
-              </div>
-            </div>
-          ) : null}
-
+        <div className="flex-1 flex flex-col md:flex-row bg-background overflow-hidden">
           {/* Sidebar Tabs */}
           <div className="w-full md:w-64 bg-muted/10 border-b md:border-b-0 md:border-r border-border p-4 flex flex-row md:flex-col gap-1.5 overflow-x-auto select-none">
             <div className="hidden md:block px-3 py-2 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
