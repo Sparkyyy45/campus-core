@@ -2,19 +2,17 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AnnouncementsClient } from "./announcements-client";
-
-export const dynamic = "force-dynamic";
+import { getCachedUserAndProfile } from "@/lib/supabase/cached";
 
 export default async function AnnouncementsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Use request-level cached user — no extra getUser() round-trip
+  const { user } = await getCachedUserAndProfile();
   if (!user) redirect("/login");
 
+  const supabase = await createClient();
   const db = supabase as any;
 
-  // Fetch announcements directly (respecting RLS) and per-user reads concurrently
+  // Fetch announcements and per-user reads concurrently
   const [announcementsResult, readsResult] = await Promise.all([
     db
       .from("announcements")

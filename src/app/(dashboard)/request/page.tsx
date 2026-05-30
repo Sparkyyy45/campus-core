@@ -3,8 +3,6 @@ import { redirect } from "next/navigation";
 import { getCachedUserAndProfile } from "@/lib/supabase/cached";
 import { RequestClient } from "./request-client";
 
-export const dynamic = "force-dynamic";
-
 export default async function RequestPage() {
   const { user, profile } = await getCachedUserAndProfile();
 

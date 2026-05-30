@@ -13,8 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ResourceFilters } from "@/components/dashboard/resource-filters";
-
-export const dynamic = "force-dynamic";
+import { getCachedUserAndProfile } from "@/lib/supabase/cached";
 
 interface Resource {
   id: string;
@@ -33,29 +32,14 @@ export default async function ResourcesPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const supabase = await createClient();
+  // Use request-level cached user — no extra getUser() round-trip
+  const { user, profile } = await getCachedUserAndProfile();
   const sp = await searchParams;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  if (!user || !profile) redirect("/login");
 
-  if (!user) redirect("/login");
-
+  const supabase = await createClient();
   const db = supabase as any;
-
-  // STAGE 1: Fetch profile and active resource types concurrently
-  const [profileResult, resourceTypesResult] = await Promise.all([
-    db
-      .from("profiles")
-      .select("branch_code, semester")
-      .eq("id", user.id)
-      .single(),
-    db.from("resource_types").select("id, name, is_pyq").eq("is_active", true),
-  ]);
-
-  const profile = profileResult.data;
-  const resourceTypesRaw = resourceTypesResult.data || [];
 
   const rawSelectedType = sp.type as string | undefined;
   const selectedType = rawSelectedType === "pyqs" ? "pyq" : rawSelectedType;
@@ -65,21 +49,17 @@ export default async function ResourcesPage({
     ? parseInt(sp.semester as string)
     : profile?.semester || 1;
 
-  const resourceTypes = (
-    (resourceTypesRaw || []) as { id: string; name: string; is_pyq: boolean }[]
-  ).map((t) => ({
-    id: t.id,
-    name: t.name,
-    slug: t.name.toLowerCase(),
-    is_pyq: t.is_pyq,
-  }));
-
-  // STAGE 2: Fetch resources + subjects concurrently directly from Supabase
-  const [resourcesResult, subjectsResult] = await Promise.all([
-    db
-      .from("resources")
-      .select(
-        `
+  // Fetch resource types, resources, and subjects concurrently — single parallel batch
+  const [resourceTypesResult, resourcesResult, subjectsResult] =
+    await Promise.all([
+      db
+        .from("resource_types")
+        .select("id, name, is_pyq")
+        .eq("is_active", true),
+      db
+        .from("resources")
+        .select(
+          `
         id, 
         title, 
         description, 
@@ -90,17 +70,30 @@ export default async function ResourcesPage({
         subjects (name),
         resource_types (name, is_pyq)
       `
-      )
-      .eq("branch_code", profile?.branch_code || "")
-      .eq("semester", selectedSemester)
-      .eq("status", "PUBLISHED")
-      .order("created_at", { ascending: false }),
-    db
-      .from("subjects")
-      .select("id, name")
-      .eq("branch_code", profile?.branch_code || "")
-      .eq("semester", selectedSemester),
-  ]);
+        )
+        .eq("branch_code", profile?.branch_code || "")
+        .eq("semester", selectedSemester)
+        .eq("status", "PUBLISHED")
+        .order("created_at", { ascending: false }),
+      db
+        .from("subjects")
+        .select("id, name")
+        .eq("branch_code", profile?.branch_code || "")
+        .eq("semester", selectedSemester),
+    ]);
+
+  const resourceTypes = (
+    (resourceTypesResult.data || []) as {
+      id: string;
+      name: string;
+      is_pyq: boolean;
+    }[]
+  ).map((t) => ({
+    id: t.id,
+    name: t.name,
+    slug: t.name.toLowerCase(),
+    is_pyq: t.is_pyq,
+  }));
 
   const allResources = resourcesResult.data || [];
   const subjects = subjectsResult.data || [];

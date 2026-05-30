@@ -9,8 +9,6 @@ import {
   getCachedAnnouncementsAndReads,
 } from "@/lib/supabase/cached";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   robots: {
     index: false,

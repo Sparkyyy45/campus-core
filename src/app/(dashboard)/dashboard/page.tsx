@@ -7,13 +7,13 @@ import {
   getCachedAnnouncementsAndReads,
 } from "@/lib/supabase/cached";
 
-export const dynamic = "force-dynamic";
-
 export default async function DashboardPage() {
+  // Use request-level cached user — no extra getUser() round-trip
   const { user, profile } = await getCachedUserAndProfile();
 
   if (!user || !profile) redirect("/login");
 
+  // Reuse the same Supabase client for all DB queries in this render
   const supabase = await createClient();
   const db = supabase as any;
 
