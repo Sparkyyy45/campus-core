@@ -30,10 +30,11 @@ export default function PrivacyPolicyPage() {
             <ArrowLeft className="h-4 w-4" />
             Back to Portal
           </Link>
-          <div className="flex items-center">
-            <span className="text-base font-extrabold tracking-tight text-[#37352F]">
+          <div className="flex items-center gap-1">
+            <span className="text-base font-black tracking-tighter text-[#37352F]">
               CampusCore
             </span>
+            <span className="h-1 w-1 rounded-full bg-primary" />
           </div>
         </div>
       </header>

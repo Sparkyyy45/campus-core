@@ -73,10 +73,11 @@ function LoginContent() {
     <div className="auth-container">
       <div className="auth-card">
         {/* Logo */}
-        <div className="flex items-center justify-center mb-8">
-          <span className="text-2xl font-extrabold tracking-tight text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+        <div className="flex items-center justify-center gap-1.5 mb-8">
+          <span className="text-2xl font-black tracking-tighter text-foreground bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 bg-clip-text text-transparent">
             CampusCore
           </span>
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
         </div>
 
         <div className="mb-7">

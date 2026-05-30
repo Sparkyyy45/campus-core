@@ -57,13 +57,16 @@ export function Sidebar({
     >
       {/* Brand Header — Minimalist Line-Art Concept */}
       <div className="flex h-20 items-center px-6 border-b border-[#EAEAEA]">
-        <Link href="/dashboard" className="flex items-center w-full px-2">
+        <Link href="/dashboard" className="flex items-center gap-1 w-full px-2">
           {!isCollapsed ? (
-            <span className="text-lg font-extrabold tracking-tight text-[#37352F]">
-              CampusCore
-            </span>
+            <>
+              <span className="text-lg font-black tracking-tighter text-[#37352F]">
+                CampusCore
+              </span>
+              <span className="h-1 w-1 rounded-full bg-primary" />
+            </>
           ) : (
-            <span className="text-lg font-extrabold tracking-tight text-[#37352F]">
+            <span className="text-base font-black tracking-tighter text-[#37352F]">
               CC
             </span>
           )}

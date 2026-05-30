@@ -83,12 +83,13 @@ export default async function LandingPage() {
       />
 
       {/* Premium Minimalist Header */}
-      <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/40 transition-all duration-300">
-        <div className="container mx-auto px-6 h-16 flex items-center max-w-7xl relative">
-          <Link href="/" className="flex items-center">
-            <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent hover:opacity-90 transition-opacity">
+      <header className="sticky top-0 z-50 w-full bg-background/85 backdrop-blur-lg border-b border-border/30 transition-all duration-300 py-3">
+        <div className="container mx-auto px-6 h-16 flex items-center max-w-7xl">
+          <Link href="/" className="flex items-center gap-2 group">
+            <span className="text-2xl md:text-3xl font-black tracking-tighter bg-gradient-to-r from-foreground via-foreground/90 to-foreground/75 bg-clip-text text-transparent group-hover:opacity-85 transition-opacity">
               CampusCore
             </span>
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
           </Link>
         </div>
       </header>
@@ -357,9 +358,12 @@ export default async function LandingPage() {
           <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
           <div className="max-w-3xl mx-auto space-y-8 relative z-10">
-            <span className="block text-3xl font-extrabold tracking-tight text-background">
-              CampusCore
-            </span>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-3xl font-black tracking-tighter text-background">
+                CampusCore
+              </span>
+              <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+            </div>
 
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance">
               Access your academic portal today.
@@ -623,10 +627,11 @@ export default async function LandingPage() {
       {/* Premium Footer */}
       <footer className="border-t border-border/40 py-12 px-6 bg-background">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center opacity-90">
-            <span className="text-base font-extrabold tracking-tight">
+          <div className="flex items-center gap-1.5 opacity-90">
+            <span className="text-lg font-black tracking-tighter bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
               CampusCore
             </span>
+            <span className="h-1 w-1 rounded-full bg-primary" />
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-muted-foreground">
