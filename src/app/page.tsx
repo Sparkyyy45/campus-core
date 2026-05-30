@@ -84,64 +84,12 @@ export default async function LandingPage() {
 
       {/* Premium Minimalist Header */}
       <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/40 transition-all duration-300">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between max-w-7xl relative">
+        <div className="container mx-auto px-6 h-16 flex items-center max-w-7xl relative">
           <Link href="/" className="flex items-center">
             <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent hover:opacity-90 transition-opacity">
               CampusCore
             </span>
           </Link>
-
-          {/* Centered Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground absolute left-1/2 -translate-x-1/2">
-            <Link
-              href="/resources"
-              className="hover:text-foreground transition-colors"
-            >
-              Resources
-            </Link>
-            <Link
-              href="/roadmap"
-              className="hover:text-foreground transition-colors"
-            >
-              Roadmaps
-            </Link>
-            <Link
-              href="/announcements"
-              className="hover:text-foreground transition-colors"
-            >
-              Announcements
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            {user ? (
-              <Link href="/dashboard">
-                <Button
-                  size="sm"
-                  className="h-9 rounded-xl px-4 shadow-sm font-medium hover:scale-[1.02] transition-all"
-                >
-                  Go to Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <div className="flex items-center gap-1 sm:gap-2">
-                <Link
-                  href="/login"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
-                >
-                  Log in
-                </Link>
-                <Link href="/signup">
-                  <Button
-                    size="sm"
-                    className="h-9 rounded-xl px-4 shadow-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] transition-all"
-                  >
-                    Register Account
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
         </div>
       </header>
 
