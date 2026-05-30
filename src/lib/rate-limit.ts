@@ -1,78 +1,74 @@
-// src/lib/rate-limit.ts
-// Robust in-memory rate limiting with sliding window and auto-cleanup
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-type RateLimitRecord = {
-  timestamps: number[];
-};
-
-const limiters = new Map<string, RateLimitRecord>();
-
-// Perform periodic cleanup of completely expired entries to prevent memory leaks
-let lastCleanup = Date.now();
-const CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
-
-function cleanupExpired(now: number, windowMs: number) {
-  if (now - lastCleanup < CLEANUP_INTERVAL) return;
-  lastCleanup = now;
-
-  for (const [key, record] of limiters.entries()) {
-    const validTimestamps = record.timestamps.filter((t) => now - t < windowMs);
-    if (validTimestamps.length === 0) {
-      limiters.delete(key);
-    } else {
-      record.timestamps = validTimestamps;
-    }
-  }
-}
-
-export type RateLimitResult = {
-  success: boolean;
-  limit: number;
-  remaining: number;
-  reset: number;
-};
+// Initialize Redis only if environment variables are provided
+export const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      })
+    : null;
 
 /**
- * Check if the request is within the rate limit.
- * @param key Unique key to identify the client (e.g. user ID, IP address)
- * @param limit Maximum number of requests allowed in the window
- * @param windowMs Time window in milliseconds
+ * Creates an Upstash rate limiter with fallback handling.
+ * Note: The fallback will not persist across Vercel serverless edge invocations,
+ * but prevents the app from crashing in dev without keys.
  */
-export function rateLimit(
-  key: string,
-  limit: number,
-  windowMs: number
-): RateLimitResult {
-  const now = Date.now();
-
-  // Trigger cleanup occasionally
-  cleanupExpired(now, windowMs);
-
-  let record = limiters.get(key);
-  if (!record) {
-    record = { timestamps: [] };
-    limiters.set(key, record);
+function createRateLimiter(
+  config: Parameters<typeof Ratelimit.slidingWindow>[0],
+  window: Parameters<typeof Ratelimit.slidingWindow>[1]
+) {
+  if (redis) {
+    return new Ratelimit({
+      redis: redis,
+      limiter: Ratelimit.slidingWindow(config, window),
+      analytics: true,
+      /**
+       * Optional prefix for the keys used in redis. This is useful if you want to share a redis
+       * instance with other applications and want to avoid key collisions. The default prefix is
+       * @upstash/ratelimit
+       */
+      prefix: "@upstash/ratelimit",
+    });
   }
 
-  // Filter out timestamps outside the sliding window
-  record.timestamps = record.timestamps.filter((t) => now - t < windowMs);
-
-  if (record.timestamps.length >= limit) {
-    const oldestTimestamp = record.timestamps[0];
-    const resetTime = oldestTimestamp + windowMs;
-    return {
-      success: false,
-      limit,
-      remaining: 0,
-      reset: Math.ceil((resetTime - now) / 1000), // seconds until reset
-    };
-  }
-
-  record.timestamps.push(now);
+  // Fallback map if redis is not configured
+  const fallbackMap = new Map();
   return {
-    success: true,
-    limit,
-    remaining: limit - record.timestamps.length,
-    reset: Math.ceil(windowMs / 1000),
+    limit: async (identifier: string) => {
+      const now = Date.now();
+      const windowMs = parseInt(window.replace(/[^0-9]/g, "")) * 1000;
+
+      const record = fallbackMap.get(identifier) || {
+        count: 0,
+        resetTime: now + windowMs,
+      };
+
+      if (now > record.resetTime) {
+        record.count = 1;
+        record.resetTime = now + windowMs;
+      } else {
+        record.count++;
+      }
+
+      fallbackMap.set(identifier, record);
+
+      return {
+        success: record.count <= config,
+        limit: config,
+        remaining: Math.max(0, config - record.count),
+        reset: record.resetTime,
+      };
+    },
   };
 }
+
+// 1. Auth Limiter: Very strict to prevent brute force attacks (5 requests per minute)
+export const authRateLimiter = createRateLimiter(5, "1 m");
+
+// 2. API Limiter: Moderate limit for data endpoints (20 requests per 10 seconds)
+export const apiRateLimiter = createRateLimiter(20, "10 s");
+
+// 3. Global Limiter: Baseline protection for general page navigation (100 requests per 10 seconds)
+export const globalRateLimiter = createRateLimiter(100, "10 s");
