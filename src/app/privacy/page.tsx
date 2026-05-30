@@ -203,7 +203,7 @@ export default function PrivacyPolicyPage() {
                 or IT Helpdesk:
               </p>
               <p className="text-sm font-medium text-[#37352F] pt-1">
-                Main Developer: Suyash Yadav
+                Support Team
               </p>
             </section>
           </div>

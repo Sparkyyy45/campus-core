@@ -120,7 +120,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
       } else {
         setSubmittedSuccess(true);
         toast.success(
-          res.success || "Submitted! Sent directly to Suyash's inbox"
+          res.success || "Submitted! Sent directly to the Admin inbox"
         );
       }
     });
@@ -155,7 +155,7 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
           <p className="text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
             Need notes, found a bug, want a new feature built, or just want to
             tell us about your experience? Write it below and it will be sent
-            directly to Suyash&apos;s email inbox.
+            directly to the support team inbox.
           </p>
         </div>
 
@@ -183,13 +183,12 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-black text-foreground">
-              Sent to Suyash
+              Sent Successfully
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
               Awesome job, {firstName}! Your submission was completed and
-              directed to main developer **Suyash Yadav**. Our development team
-              is working hard to resolve bugs, review feature ideas, and upload
-              notes.
+              directed to the **Support Team**. Our development team is working
+              hard to resolve bugs, review feature ideas, and upload notes.
             </p>
           </div>
 
@@ -339,12 +338,12 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                   {isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Sending alert to Suyash...</span>
+                      <span>Sending alert...</span>
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>Send to Suyash&apos;s Email</span>
+                      <span>Send to Support Email</span>
                     </>
                   )}
                 </Button>
@@ -365,8 +364,8 @@ export function RequestClient({ profile }: { profile: CachedProfile }) {
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                   We have upgraded this suggestion box! Now, everything you send
-                  here goes straight to main developer **Suyash Yadav**
-                  instantly via live email dispatch.
+                  here goes straight to the **Support Team** instantly via live
+                  email dispatch.
                 </p>
                 <div className="space-y-3 pt-2">
                   <div className="flex items-start gap-2.5">

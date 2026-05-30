@@ -106,12 +106,12 @@ export default function DemoRequestPage() {
 
     setIsPending(true);
 
-    // Simulate direct dispatch to Suyash Yadav's inbox
+    // Simulate direct dispatch to the Admin inbox
     setTimeout(() => {
       setIsPending(false);
       setSubmittedSuccess(true);
       toast.success(
-        "Demo request submitted! (In a real account, this is delivered directly to Suyash Yadav's inbox)"
+        "Demo request submitted! (In a real account, this is delivered directly to the Admin inbox)"
       );
     }, 1200);
   };
@@ -144,7 +144,7 @@ export default function DemoRequestPage() {
           <p className="text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
             Need notes, found a bug, want a new feature built, or just want to
             tell us about your experience? Write it below and it will be sent
-            directly to Suyash Yadav&apos;s email inbox.
+            directly to the support team inbox.
           </p>
         </div>
 
@@ -172,13 +172,13 @@ export default function DemoRequestPage() {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-black text-foreground">
-              Sent to Suyash
+              Sent Successfully
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed font-medium">
               Outstanding! Your demo submission was successfully completed and
-              directed to main developer <strong>Suyash Yadav</strong>. Our
-              development team is working hard to resolve bugs, review feature
-              ideas, and upload notes.
+              directed to the <strong>Support Team</strong>. Our development
+              team is working hard to resolve bugs, review feature ideas, and
+              upload notes.
             </p>
           </div>
 
@@ -328,12 +328,12 @@ export default function DemoRequestPage() {
                   {isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Sending alert to Suyash...</span>
+                      <span>Sending alert...</span>
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>Send to Suyash Yadav&apos;s Email</span>
+                      <span>Send to Support Email</span>
                     </>
                   )}
                 </Button>
@@ -354,9 +354,8 @@ export default function DemoRequestPage() {
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                   We have upgraded this suggestion box! Now, everything you send
-                  here goes straight to main developer{" "}
-                  <strong>Suyash Yadav</strong> instantly via live email
-                  dispatch.
+                  here goes straight to the <strong>Support Team</strong>{" "}
+                  instantly via live email dispatch.
                 </p>
                 <div className="space-y-3 pt-2 select-none">
                   <div className="flex items-start gap-2.5">

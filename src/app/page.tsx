@@ -826,9 +826,7 @@ export default async function LandingPage() {
                   grievances, please reach out. All security inquiries are
                   handled directly:
                 </p>
-                <p className="font-semibold text-foreground">
-                  Main Developer: Suyash Yadav
-                </p>
+                <p className="font-semibold text-foreground">Security Team</p>
               </div>
             </details>
           </div>
