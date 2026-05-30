@@ -72,7 +72,7 @@ export default function DemoLayout({
       >
         {/* Brand Header */}
         <div className="flex h-20 items-center px-6 border-b border-[#EAEAEA]">
-          <Link href="/demo" className="flex items-center gap-1 w-full px-2">
+          <Link href="/" className="flex items-center gap-1 w-full px-2">
             {!isCollapsed ? (
               <>
                 <span className="text-lg font-black tracking-tighter text-[#37352F]">
