@@ -130,8 +130,11 @@ export default async function LandingPage() {
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-tr from-primary/10 to-accent/20 rounded-full blur-[120px] pointer-events-none -z-10" />
 
           {/* Version Notice Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted/60 border border-border/80 text-xs font-medium text-muted-foreground mb-8 animate-fade-in-up">
-            <span className="flex h-1.5 w-1.5 rounded-full bg-primary" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted/40 border border-border/50 text-xs font-medium text-muted-foreground mb-8 animate-fade-in-up hover:bg-muted/60 transition-colors cursor-default backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
             <span className="text-foreground font-semibold">
               Official Academic Portal
             </span>
@@ -140,11 +143,11 @@ export default async function LandingPage() {
           </div>
 
           <h1
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-balance leading-[1.05] mb-6 animate-fade-in-up"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-balance leading-[1.05] mb-6 animate-fade-in-up"
             style={{ animationDelay: "0.05s" }}
           >
             Your academic life, <br />
-            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent">
+            <span className="bg-gradient-to-br from-foreground via-foreground/80 to-muted-foreground bg-clip-text text-transparent">
               beautifully organized.
             </span>
           </h1>
@@ -168,7 +171,7 @@ export default async function LandingPage() {
             >
               <Button
                 size="lg"
-                className="w-full sm:w-auto h-12 px-8 rounded-xl text-base shadow-lg shadow-primary/10 hover:scale-[1.02] transition-all duration-200 font-medium"
+                className="w-full sm:w-auto h-13 px-8 rounded-xl text-base shadow-lg shadow-primary/10 hover:scale-[1.02] transition-all duration-200 font-semibold"
               >
                 Create Student Account <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -177,29 +180,48 @@ export default async function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full sm:w-auto h-12 px-8 rounded-xl text-base hover:bg-muted/50 border-border/80 transition-all duration-200 font-medium text-foreground cursor-pointer"
+                className="w-full sm:w-auto h-13 px-8 rounded-xl text-base hover:bg-muted/50 border-border/80 transition-all duration-200 font-semibold text-foreground cursor-pointer bg-background"
               >
                 View Demo
               </Button>
             </Link>
           </div>
 
-          {/* Subtle Trust Indicators */}
+          {/* Avatar Social Proof */}
           <div
-            className="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-xs font-medium text-muted-foreground/80 animate-fade-in-up"
+            className="mt-14 flex flex-col items-center justify-center gap-4 animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
           >
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />{" "}
-              <span>Granular Security Firewalls</span>
+            <div className="flex -space-x-3">
+              {[
+                { bg: "bg-blue-100", text: "text-blue-700", letter: "A" },
+                { bg: "bg-emerald-100", text: "text-emerald-700", letter: "R" },
+                { bg: "bg-amber-100", text: "text-amber-700", letter: "P" },
+                { bg: "bg-rose-100", text: "text-rose-700", letter: "K" },
+                { bg: "bg-purple-100", text: "text-purple-700", letter: "S" },
+              ].map((avatar, i) => (
+                <div
+                  key={i}
+                  className={`h-10 w-10 rounded-full border-2 border-background flex items-center justify-center text-xs font-bold ${avatar.bg} ${avatar.text} shadow-sm ring-1 ring-black/5 hover:-translate-y-1 transition-transform duration-200`}
+                >
+                  {avatar.letter}
+                </div>
+              ))}
             </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />{" "}
-              <span>Zero-Trust PDF Isolation</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />{" "}
-              <span>Hardened Edge Routing Proxy</span>
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
+                  />
+                ))}
+              </div>
+              <span>
+                Joined by{" "}
+                <span className="text-foreground font-bold">1,200+</span> SPSU
+                Students
+              </span>
             </div>
           </div>
 
