@@ -9,6 +9,16 @@ import {
   CheckCircle2,
   Sparkles,
   Layers,
+  Users,
+  BookOpen,
+  Clock,
+  Fingerprint,
+  Lock,
+  GraduationCap,
+  MessageSquare,
+  Star,
+  Zap,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -365,6 +375,207 @@ export default async function LandingPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Metrics & Impact Section */}
+        <section className="py-20 px-6 bg-muted/30 border-y border-border/40">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center">
+              {[
+                { label: "Verified Students", value: "1,200+", icon: Users },
+                { label: "Study Materials", value: "450+", icon: BookOpen },
+                { label: "Course Roadmaps", value: "50+", icon: Map },
+                { label: "Platform Uptime", value: "99.9%", icon: Zap },
+              ].map((stat, i) => (
+                <div key={i} className="space-y-3">
+                  <div className="mx-auto h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                    <stat.icon className="h-5 w-5" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section className="py-24 px-6 max-w-6xl mx-auto">
+          <div className="text-center mb-16 space-y-3">
+            <div className="text-xs font-bold text-primary tracking-widest uppercase">
+              Seamless Onboarding
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-balance">
+              Three steps to academic clarity.
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-balance">
+              No complex setup. Just authenticate your student identity and
+              start exploring.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-[2px] bg-gradient-to-r from-transparent via-border to-transparent -z-10" />
+
+            {[
+              {
+                step: "01",
+                title: "Verify Identity",
+                desc: "Sign up securely using your official university roll number and credentials.",
+                icon: Fingerprint,
+              },
+              {
+                step: "02",
+                title: "Select Branch",
+                desc: "Choose your engineering branch and current semester to personalize your feed.",
+                icon: Layers,
+              },
+              {
+                step: "03",
+                title: "Access Resources",
+                desc: "Instantly unlock faculty-verified notes, roadmaps, and previous year papers.",
+                icon: Lock,
+              },
+            ].map((step, i) => (
+              <div
+                key={i}
+                className="relative bg-card border border-border/60 rounded-2xl p-8 text-center shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                <div className="mx-auto h-16 w-16 rounded-2xl bg-background border border-border/80 shadow-sm flex items-center justify-center mb-6 relative group">
+                  <step.icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />
+                  <span className="absolute -top-3 -right-3 h-7 w-7 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center border-2 border-background">
+                    {step.step}
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-foreground">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {step.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Testimonials Grid (Wall of Love) */}
+        <section className="py-24 px-6 bg-muted/20 border-y border-border/40">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16 space-y-3">
+              <div className="text-xs font-bold text-primary tracking-widest uppercase">
+                Wall of Love
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-balance">
+                Trusted by top SPSU students.
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  quote:
+                    "CampusCore completely changed how I prepare for mid-terms. Having all the PYQs in one verified place saves me hours of asking around.",
+                  author: "Aditi S.",
+                  role: "CSE, 6th Semester",
+                },
+                {
+                  quote:
+                    "The roadmaps feature is incredible. I finally know exactly which prerequisites I need to clear before taking advanced electives.",
+                  author: "Rahul M.",
+                  role: "ECE, 4th Semester",
+                },
+                {
+                  quote:
+                    "No more scrolling through WhatsApp groups to find that one PDF from last month. It's clean, fast, and beautifully designed.",
+                  author: "Priya K.",
+                  role: "CSE, 8th Semester",
+                },
+              ].map((testimonial, i) => (
+                <div
+                  key={i}
+                  className="bg-background border border-border/60 rounded-2xl p-6 shadow-sm flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(5)].map((_, j) => (
+                        <Star
+                          key={j}
+                          className="h-4 w-4 fill-amber-400 text-amber-400"
+                        />
+                      ))}
+                    </div>
+                    <p className="text-sm text-foreground leading-relaxed mb-6 italic">
+                      &quot;{testimonial.quote}&quot;
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                      {testimonial.author.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-foreground">
+                        {testimonial.author}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {testimonial.role}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-24 px-6 max-w-4xl mx-auto">
+          <div className="text-center mb-16 space-y-3">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-balance">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-muted-foreground text-base max-w-xl mx-auto">
+              Everything you need to know about the CampusCore platform.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: "Is CampusCore officially affiliated with SPSU?",
+                a: "Yes, CampusCore is designed specifically for SPSU students and faculty. All academic resources (notes, roadmaps, PYQs) are verified by respective department heads before publishing to ensure strict syllabus compliance.",
+              },
+              {
+                q: "Can I upload my own study notes?",
+                a: "Currently, only verified faculty members and authorized department representatives can upload official materials. This strict policy ensures 100% accuracy and eliminates misinformation during exam season.",
+              },
+              {
+                q: "Is my personal data secure?",
+                a: "Absolutely. We enforce granular security firewalls and strictly comply with India's DPDP Act 2023. We only store minimal data necessary for academic authentication.",
+              },
+              {
+                q: "How do I get an account?",
+                a: "Simply click 'Create Student Account', verify your official SPSU roll number, and set up your profile. It takes less than 60 seconds.",
+              },
+            ].map((faq, i) => (
+              <details
+                key={i}
+                className="group bg-card border border-border/60 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden cursor-pointer"
+              >
+                <summary className="flex items-center justify-between p-6 text-base font-semibold text-foreground hover:bg-muted/30 transition-colors">
+                  <span>{faq.q}</span>
+                  <ChevronDown className="h-5 w-5 text-muted-foreground group-open:rotate-180 transition-transform duration-300" />
+                </summary>
+                <div className="px-6 pb-6 pt-2 text-sm text-muted-foreground leading-relaxed border-t border-border/40 bg-muted/10">
+                  {faq.a}
+                </div>
+              </details>
+            ))}
           </div>
         </section>
 
